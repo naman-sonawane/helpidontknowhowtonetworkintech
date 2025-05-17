@@ -1,7 +1,13 @@
+import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
 
 function Search() {
+  const navigate = useNavigate();
   const [name, setName] = useState('');
+
+  const handleCompareClick = () => {
+    navigate('/results1');
+  }
 
   return (
     <div className="h-screen w-full bg-[#fdf5eb] font-serif flex flex-col items-center justify-center px-6 text-black">
@@ -23,6 +29,7 @@ function Search() {
       {/* Compare Button */}
       <button
         className="border border-black rounded-xl px-6 py-2 flex items-center justify-center gap-2 text-lg transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9] relative"
+        onClick={handleCompareClick}
       >
         <span className="text-xl">⭕</span> compare interests
         <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-yellow-400 rounded-full border border-white"></span>

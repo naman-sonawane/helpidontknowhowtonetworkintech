@@ -4,6 +4,7 @@ function Analyze() {
   const navigate = useNavigate();
 
   const handleSearchClick = () => {
+    console.log("Navigating to /search...");
     navigate('/search');
   };
 
@@ -74,14 +75,13 @@ function Analyze() {
         {/* Compare Interests Button */}
         <button
           className="mt-5 border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9]"
+          onClick={handleSearchClick}
         >
-          ⭕ search for yourself
+          ⭕ compare interests
         </button>
 
         {/* Plus icon */}
-        <button 
-          className="mt-5 w-9 h-9 border border-black rounded-full text-xl flex items-center justify-center"
-          onClick={handleSearchClick}>
+        <button className="mt-5 w-9 h-9 border border-black rounded-full text-xl flex items-center justify-center">
           +
         </button>
       </div>
