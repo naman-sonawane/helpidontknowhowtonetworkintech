@@ -69,6 +69,15 @@ function Analyze() {
   // Get profile image or placeholder
   const profileImage = profile?.imageUrl || "https://via.placeholder.com/150";
 
+  // Ensure conversation starters exist
+  const conversationStarters = profileData.conversationStarters || [
+    "What brought you to this event?",
+    "What are you working on these days?",
+    "What's your background in?",
+    "Have you been to events like this before?",
+    "What are you hoping to get out of today?"
+  ];
+
   // Icons mapping for interests
   const interestIcons: {[key: string]: string} = {
     "Coding": "💻",
@@ -155,21 +164,29 @@ function Analyze() {
 
         {/* Prompt */}
         <div className="italic text-sm text-gray-700 mb-1">
-          introduce yourself, then ask
-        </div>
-        <div className="text-lg font-medium mb-4">
-          "what kinda stuff are you into?"
+          introduce yourself, then use one of these ice breakers
         </div>
 
-        {/* Conversation starters */}
-        <div className="text-left w-full text-[15px]">
-          <p className="font-semibold mb-1">Other Conversation Starters</p>
-          <ul className="list-disc list-inside space-y-1">
-            {profileData.conversationStarters?.map((starter: string, index: number) => (
-              <li key={index}>{`"${starter}"`}</li>
-            ))}
-          </ul>
-        </div>
+        {/* Featured Conversation Starter */}
+        {conversationStarters.length > 0 && (
+          <div className="text-lg font-medium mb-4 p-3 bg-white border border-black rounded-lg">
+            "{conversationStarters[0]}"
+          </div>
+        )}
+
+        {/* More Conversation starters */}
+        {conversationStarters.length > 1 && (
+          <div className="text-left w-full text-[15px]">
+            <p className="font-semibold mb-1">More Conversation Starters</p>
+            <ul className="space-y-2">
+              {conversationStarters.slice(1).map((starter: string, index: number) => (
+                <li key={index} className="p-2 bg-[#f9f3e9] rounded-lg">
+                  "{starter}"
+                </li>
+              ))}
+            </ul>
+          </div>
+        )}
 
         {/* Work Experience */}
         {profileData.rawData?.work_experience && profileData.rawData.work_experience.length > 0 && (
@@ -185,7 +202,7 @@ function Analyze() {
         <div className="text-left w-full mt-5 text-[15px]">
           <p className="font-semibold mb-1">{profileData.name.split(' ')[0]}'s Interests</p>
           <ul className="space-y-1">
-            {profileData.interests?.map((interest: string, index: number) => (
+            {(profileData.interests || []).map((interest: string, index: number) => (
               <li key={index}>
                 {interestIcons[interest] || '•'} {interest}
               </li>

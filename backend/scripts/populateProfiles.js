@@ -108,34 +108,24 @@ async function populateAllProfiles() {
     
     // Process each profile
     for (const profile of profiles) {
-      // Check if profile needs updating
-      const needsConversationStarters = !profile.conversationStarters || profile.conversationStarters.length === 0;
-      const needsInterests = !profile.interests || profile.interests.length === 0;
+      // Modified: Always update all profiles, regardless of existing data
+      console.log(`Processing profile for ${profile.name}`);
       
-      if (needsConversationStarters || needsInterests) {
-        console.log(`Processing profile for ${profile.name}`);
-        
-        // Generate content
-        const { conversationStarters, interests } = await generateProfileContent(profile);
-        
-        // Update only the fields that need updating
-        const updateData = {};
-        if (needsConversationStarters) {
-          updateData.conversationStarters = conversationStarters;
-        }
-        if (needsInterests) {
-          updateData.interests = interests;
-        }
-        
-        // Update the profile
-        await Profile.findByIdAndUpdate(profile._id, updateData);
-        console.log(`Updated ${profile.name} with ${needsConversationStarters ? 'conversation starters' : ''} ${needsInterests ? 'interests' : ''}`);
-        
-        // Add a small delay to avoid hammering the AI service
-        await new Promise(resolve => setTimeout(resolve, 1000));
-      } else {
-        console.log(`Skipping ${profile.name} - already has conversation starters and interests`);
-      }
+      // Generate content
+      const { conversationStarters, interests } = await generateProfileContent(profile);
+      
+      // Update both fields for all profiles
+      const updateData = {
+        conversationStarters: conversationStarters,
+        interests: interests
+      };
+      
+      // Update the profile
+      await Profile.findByIdAndUpdate(profile._id, updateData);
+      console.log(`Updated ${profile.name} with new conversation starters and interests`);
+      
+      // Add a small delay to avoid hammering the AI service
+      await new Promise(resolve => setTimeout(resolve, 1000));
     }
     
     console.log('All profiles processed successfully');
@@ -146,5 +136,20 @@ async function populateAllProfiles() {
   }
 }
 
-// Run the script
-populateAllProfiles();
+// Add a command-line argument option to force update
+const shouldForceUpdate = process.argv.includes('--force') || process.argv.includes('-f');
+
+// Run the script - added argument handling for command line flexibility
+if (shouldForceUpdate) {
+  console.log('Force update mode: Updating all profiles regardless of existing data...');
+  populateAllProfiles();
+} else {
+  // For backward compatibility, still run the populateAllProfiles function
+  // but with a warning that it will update everything
+  console.log('WARNING: This script will update ALL profiles with new conversation starters and interests.');
+  console.log('Proceeding in 5 seconds... (Press Ctrl+C to cancel)');
+  
+  setTimeout(() => {
+    populateAllProfiles();
+  }, 5000);
+}
