@@ -5,6 +5,8 @@ import App from './App.jsx'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <App />
+    <div className='min-w-screen'>
+      <App />
+    </div>
   </StrictMode>,
 )

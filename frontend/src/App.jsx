@@ -1,13 +1,11 @@
 import { useState } from 'react'
-import reactLogo from './assets/react.svg'
-import viteLogo from '/vite.svg'
 import './App.css'
 
 function App() {
   const [count, setCount] = useState(0)
 
   return (
-    <div className="min-h-screen bg-cream flex flex-col justify-between items-center">
+    <div className="min-h-screen min-w-screen bg-cream flex flex-col justify-between items-center">
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center">
         {/* Text column */}
