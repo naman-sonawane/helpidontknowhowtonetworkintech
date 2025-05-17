@@ -1,6 +1,6 @@
 import { Routes, Route } from 'react-router-dom';
 import Landing from './pages/landing/Landing';
-import Camera from './pages/camera/Camera';
+import Camera from './pages/camera/CameraPage';
 
 function AppRoutes() {
   return (
