@@ -43,21 +43,25 @@ function Landing() {
         </div>
 
         {/* Horizontal text for large screens */}
-        <div className="hidden lg:block text-center text-4xl sm:text-5xl md:text-6xl lg:text-7xl font-serif">
+        <div className="hidden lg:block text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif">
           help i dont know how to network in .tech
         </div>
+        {/* Plus Button + Label */}
+        <div className="mt-12 flex flex-col items-center space-y-4">
+        <button 
+          className="relative w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20
+            border-2 border-black rounded-full flex items-center justify-center
+            hover:border-gray-500 transition-colors" 
+          onClick={handleCameraClick}
+        >
+          <span className="text-2xl leading-none">+</span>
+        </button>
 
-        {/* Plus Button */}
-        <div className="mt-12">
-          <button 
-            className="relative w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20
-              border-2 border-black rounded-full flex items-center justify-center
-              hover:border-gray-500 transition-colors" 
-            onClick={handleCameraClick}
-          >
-            <span className="text-xl sm:text-2xl md:text-3xl">+</span>
-          </button>
+          <p className="mt-4 text-sm sm:text-base text-gray-600 font-serif italic">
+            press "+" to take a picture
+          </p>
         </div>
+
       </div>
 
       {/* Footer */}
