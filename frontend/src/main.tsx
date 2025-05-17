@@ -1,12 +1,15 @@
 import { StrictMode } from 'react'
 import { createRoot } from 'react-dom/client'
+import { BrowserRouter } from 'react-router-dom'
 import './index.css'
-import App from './pages/landing/Landing.tsx'
+import AppRoutes from './routes'
 
 createRoot(document.getElementById('root')).render(
   <StrictMode>
-    <div className='min-w-screen'>
-      <App />
-    </div>
+    <BrowserRouter>
+      <div className='min-w-screen'>
+        <AppRoutes />
+      </div>
+    </BrowserRouter>
   </StrictMode>
 )

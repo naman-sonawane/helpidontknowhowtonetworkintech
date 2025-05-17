@@ -1,6 +1,12 @@
-import { useState } from 'react'
+import { useNavigate } from 'react-router-dom'
 
-function App() {
+function Landing() {
+  const navigate = useNavigate();
+
+  const handleCameraClick = () => {
+    navigate('/camera');
+  };
+
   return (
     <div className="min-h-screen min-w-screen bg-cream flex flex-col justify-between items-center">
       {/* Main content */}
@@ -20,9 +26,11 @@ function App() {
 
         {/* Circular button */}
         <div className="mt-12">
-          <button className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24
-            border-2 border-black rounded-full flex items-center justify-center
-            hover:border-gray-500 transition-colors">
+          <button 
+            onClick={handleCameraClick}
+            className="relative w-16 h-16 sm:w-20 sm:h-20 md:w-24 md:h-24
+              border-2 border-black rounded-full flex items-center justify-center
+              hover:border-gray-500 transition-colors">
             <span className="text-2xl sm:text-3xl md:text-4xl">+</span>
           </button>
         </div>
@@ -36,4 +44,4 @@ function App() {
   )
 }
 
-export default App
+export default Landing
