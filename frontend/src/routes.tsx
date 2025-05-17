@@ -6,6 +6,8 @@ import Search from './pages/search/SearchPage';
 import Compare from './pages/compare/ComparePage';
 import Results1 from './pages/results1/Result1Page';
 import Results2 from './pages/results2/Result2Page';
+import AdminPage from './pages/admin/admin';
+import NoMatchPage from './pages/no-match/no-match';
 
 function AppRoutes() {
   return (
@@ -14,9 +16,8 @@ function AppRoutes() {
       <Route path="/camera" element={<Camera />} />
       <Route path="/analyze" element={<Analyze />} />
       <Route path="/search" element={<Search />} />
-      <Route path="/compare" element={<Compare />} />
-      <Route path="/Results1" element={<Results1 />} />
-      <Route path="/Results2" element={<Results2 />} />
+      <Route path="/admin" element={<AdminPage />} />
+      <Route path="/no-match" element={<NoMatchPage />} />
     </Routes>
   );
 }

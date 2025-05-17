@@ -1,87 +1,213 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 function Analyze() {
   const navigate = useNavigate();
+  const location = useLocation();
+  
+  // State to store profile data from backend
+  const [profile, setProfile] = useState<any>(null);
+  const [whereMet, setWhereMet] = useState('');
+  const [confidence, setConfidence] = useState<number | null>(null);
+  const [loading, setLoading] = useState(true);
 
+  // Handle search navigation
   const handleSearchClick = () => {
     console.log("Navigating to /search...");
     navigate('/search');
   };
 
+  // Handle retake photo
+  const handleRetakePhoto = () => {
+    navigate('/camera');
+  };
+
+  // Load profile data from navigation state
+  useEffect(() => {
+    if (location.state) {
+      const { profile, whereMet, confidence } = location.state as any;
+      setProfile(profile);
+      setWhereMet(whereMet || '');
+      setConfidence(confidence);
+      setLoading(false);
+    } else {
+      // If no profile data was passed, try to get from URL params or redirect
+      setLoading(false);
+      // Uncomment to redirect if no profile data
+      // navigate('/camera');
+    }
+  }, [location, navigate]);
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen w-full bg-[#fdf5eb] font-serif flex flex-col items-center justify-center">
+        <div className="animate-spin w-10 h-10 border-4 border-t-transparent border-black rounded-full"></div>
+        <p className="mt-4">Loading profile information...</p>
+      </div>
+    );
+  }
+
+  // Fallback data if no profile is available (for development)
+  const profileData = profile || {
+    name: "Christopher Ma",
+    rawData: {
+      full_name: "Christopher Ma",
+      headline: "Full-stack Developer",
+      location: "Waterloo, Ontario, Canada"
+    },
+    conversationStarters: [
+      "Hey, what kind of stuff do you like building these days?",
+      "Have you come across anything cool in tech lately?",
+      "What got you into coding in the first place?"
+    ],
+    interests: ["Coding", "AI/ML", "Swimming", "Hackathons", "Other tech events"]
+  };
+
+  // Get profile image or placeholder
+  const profileImage = profile?.imageUrl || "https://via.placeholder.com/150";
+
+  // Icons mapping for interests
+  const interestIcons: {[key: string]: string} = {
+    "Coding": "💻",
+    "AI/ML": "🤖",
+    "Swimming": "🏊‍♂️",
+    "Hackathons": "💻",
+    "Other tech events": "📣",
+    "Reading": "📚",
+    "Travel": "✈️",
+    "Music": "🎵",
+    "Sports": "🏆",
+    "Art": "🎨",
+    "Photography": "📷",
+    "Gaming": "🎮",
+    "Cooking": "🍳",
+    "Hiking": "🥾",
+    "Design": "🎨"
+  };
+
   return (
     <div className="min-h-screen w-full bg-[#fdf5eb] font-serif flex flex-col items-center justify-between px-4 py-6 overflow-hidden text-black">
+      {/* Header with Back Button */}
+      <div className="w-full flex justify-between items-center mb-4">
+        <button onClick={handleRetakePhoto} className="text-black">
+          ← Back
+        </button>
+        <h1 className="text-xl">LinkedIn Profile</h1>
+        <div className="w-8"></div>
+      </div>
+      
       {/* Profile section */}
       <div className="w-full max-w-md flex flex-col items-center gap-2 text-center">
         {/* Profile photo */}
         <img
-          src="/your-image-path.jpg" // Replace with actual photo URL or import
-          alt="Christopher Ma"
-          className="w-16 h-16 rounded-xl object-cover"
+          src={profileImage}
+          alt={profileData.name}
+          className="w-16 h-16 rounded-xl object-cover border border-black"
         />
+        
         {/* Name and title */}
         <div className="mt-1">
-          <h2 className="text-lg font-semibold">Christopher Ma</h2>
-          <p className="text-sm">Full-stack Developer</p>
+          <h2 className="text-lg font-semibold">{profileData.name}</h2>
+          <p className="text-sm">{profileData.rawData?.headline || "Professional"}</p>
+          {profileData.rawData?.location && (
+            <p className="text-xs text-gray-600">{profileData.rawData.location}</p>
+          )}
         </div>
+
+        {/* Match Confidence */}
+        {confidence !== null && (
+          <span className={`mt-1 inline-block px-3 py-1 rounded-full text-xs ${
+            confidence > 80 
+              ? 'bg-green-100 text-green-800' 
+              : confidence > 60
+                ? 'bg-yellow-100 text-yellow-800'
+                : 'bg-orange-100 text-orange-800'
+          }`}>
+            Match confidence: {confidence}%
+          </span>
+        )}
 
         {/* Socials */}
         <div className="flex gap-3 text-lg mt-1">
-          <span>🧠</span>
-          <span>📷</span>
-          <span>💼</span>
+          <a href={profileData.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">💼</a>
+          {profileData.githubUrl && <a href={profileData.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">🧠</a>}
+          {profileData.portfolioUrl && <a href={profileData.portfolioUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">📷</a>}
         </div>
 
+        {/* Where You Met */}
+        {whereMet && (
+          <div className="w-full mt-3 p-2 bg-white border border-black rounded-lg text-sm">
+            <span className="font-medium">Where you met:</span> {whereMet}
+          </div>
+        )}
+
         {/* Divider */}
-        <div className="w-32 my-2 text-xl">~ ~ ~ ~ ~ ~ ~</div>
+        <div className="w-32 my-3 text-xl">~ ~ ~ ~ ~ ~ ~</div>
 
         {/* Prompt */}
         <div className="italic text-sm text-gray-700 mb-1">
           introduce yourself, then ask
         </div>
         <div className="text-lg font-medium mb-4">
-          “what kinda stuff are you into?”
+          "what kinda stuff are you into?"
         </div>
 
-        {/* Other questions */}
+        {/* Conversation starters */}
         <div className="text-left w-full text-[15px]">
           <p className="font-semibold mb-1">Other Conversation Starters</p>
           <ul className="list-disc list-inside space-y-1">
-            <li>"Hey, what kind of stuff do you like building these days?"</li>
-            <li>"Have you come across anything cool in tech lately?"</li>
-            <li>"What got you into coding in the first place?"</li>
+            {profileData.conversationStarters?.map((starter: string, index: number) => (
+              <li key={index}>{`"${starter}"`}</li>
+            ))}
           </ul>
         </div>
+
+        {/* Work Experience */}
+        {profileData.rawData?.work_experience && profileData.rawData.work_experience.length > 0 && (
+          <div className="text-left w-full mt-5 text-[15px]">
+            <p className="font-semibold mb-1">Current Role</p>
+            <p>{profileData.rawData.work_experience[0].title}</p>
+            <p className="text-gray-700">{profileData.rawData.work_experience[0].company}</p>
+            <p className="text-gray-500 text-xs">{profileData.rawData.work_experience[0].duration}</p>
+          </div>
+        )}
 
         {/* Interests */}
         <div className="text-left w-full mt-5 text-[15px]">
-          <p className="font-semibold mb-1">Christopher’s Interests</p>
+          <p className="font-semibold mb-1">{profileData.name.split(' ')[0]}'s Interests</p>
           <ul className="space-y-1">
-            <li>💻 Coding</li>
-            <li>🤖 AI/ML</li>
-            <li>🏊‍♂️ Swimming</li>
-            <li>💻 Hackathons</li>
-            <li>📣 Other tech events</li>
+            {profileData.interests?.map((interest: string, index: number) => (
+              <li key={index}>
+                {interestIcons[interest] || '•'} {interest}
+              </li>
+            ))}
           </ul>
         </div>
 
-        {/* More tips */}
+        {/* LinkedIn button */}
         <a
-          href="#"
-          className="text-[15px] text-black underline mt-5 hover:text-gray-700 transition"
+          href={profileData.linkedinUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+          className="mt-5 border border-black rounded-lg px-6 py-2 w-full bg-blue-600 text-white text-center hover:bg-blue-700 transition-colors"
         >
-          see more networking tips
+          View on LinkedIn
         </a>
 
         {/* Compare Interests Button */}
         <button
-          className="mt-5 border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9]"
+          className="mt-4 border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9]"
           onClick={handleSearchClick}
         >
           ⭕ compare interests
         </button>
 
-        {/* Plus icon */}
-        <button className="mt-5 w-9 h-9 border border-black rounded-full text-xl flex items-center justify-center">
+        {/* New Search Button */}
+        <button 
+          onClick={handleRetakePhoto}
+          className="mt-4 w-9 h-9 border border-black rounded-full text-xl flex items-center justify-center hover:bg-[#f9f3e9] transition-colors"
+        >
           +
         </button>
       </div>

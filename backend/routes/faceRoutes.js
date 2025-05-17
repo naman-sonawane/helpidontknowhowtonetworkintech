@@ -4,7 +4,7 @@ const router = express.Router();
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
 const Profile = require('../models/profileModel');
-const { extractFaceDescriptor, findMatchingFace } = require('../faceRec/faceRecognition');
+const { extractFaceDescriptor, findMatchingFace } = require('../faceRec/faceRecognition'); // adjust path if needed
 
 // Match a face from uploaded image
 router.post('/match', upload.single('image'), async (req, res) => {
@@ -25,13 +25,24 @@ router.post('/match', upload.single('image'), async (req, res) => {
     const matchingProfile = await findMatchingFace(faceDescriptor, profiles);
     
     if (matchingProfile) {
-      // Don't send back the face descriptor in the response
-      const { faceDescriptor, ...profileData } = matchingProfile.toObject();
-      res.json({ success: true, profile: profileData });
+      // Check if matchingProfile has toObject method (Mongoose document)
+      const profileData = matchingProfile.toObject 
+        ? matchingProfile.toObject() 
+        : matchingProfile;
+      
+      // Remove the face descriptor from the response
+      delete profileData.faceDescriptor;
+      
+      res.json({ 
+        success: true, 
+        profile: profileData,
+        confidence: matchingProfile.confidence || null
+      });
     } else {
       res.json({ success: false, message: 'No matching profile found' });
     }
   } catch (error) {
+    console.error('Error in face matching:', error);
     res.status(400).json({ message: error.message });
   }
 });
