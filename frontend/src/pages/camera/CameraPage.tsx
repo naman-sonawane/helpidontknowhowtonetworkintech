@@ -74,6 +74,8 @@ function Camera() {
       console.log('Where you met:', whereMet);
       // You can send `blob` and `whereMet` to your backend here.
     }, 'image/jpeg', 0.8);
+
+    navigate('/analyze'); // navigate to next page
   };
 
   useEffect(() => {
