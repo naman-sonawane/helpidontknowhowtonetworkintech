@@ -65,8 +65,33 @@ function Landing() {
       </div>
 
       {/* Footer */}
-      <div className="mb-4 text-sm sm:text-base md:text-lg text-center text-gray-600">
-        made with 💖
+      <div className="mb-4 relative group">
+        <div className="text-sm sm:text-base md:text-lg text-center text-gray-600 cursor-pointer font-serif">
+          made with 💖
+        </div>
+        {/* Team Member Panel */}
+        <div className="absolute bottom-full left-1/2 transform -translate-x-1/2 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-300 z-50">
+          <div className="bg-[#fdf5eb] rounded-lg shadow-lg p-4 border border-gray-200">
+            <div className="grid grid-cols-4 gap-4">
+              <a href="https://www.linkedin.com/in/christopher-ma-3b35aa300" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+                <img src="/images/team/chris.jpg" alt="Chris" className="w-20 h-20 rounded-full object-cover transition-transform duration-200 hover:scale-105" />
+                <span className="mt-2 text-sm font-serif">Chris</span>
+              </a>
+              <a href="https://www.linkedin.com/in/evelynhwong" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+                <img src="/images/team/evelyn.jpg" alt="Evelyn" className="w-20 h-20 rounded-full object-cover transition-transform duration-200 hover:scale-105" />
+                <span className="mt-2 text-sm font-serif">Evelyn</span>
+              </a>
+              <a href="https://www.linkedin.com/in/naman-sonawane" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+                <img src="/images/team/naman.jpg" alt="Naman" className="w-20 h-20 rounded-full object-cover transition-transform duration-200 hover:scale-105" />
+                <span className="mt-2 text-sm font-serif">Naman</span>
+              </a>
+              <a href="https://www.linkedin.com/in/shaoming-wu" target="_blank" rel="noopener noreferrer" className="flex flex-col items-center">
+                <img src="/images/team/shao.jpg" alt="Shao" className="w-20 h-20 rounded-full object-cover transition-transform duration-200 hover:scale-105" />
+                <span className="mt-2 text-sm font-serif">Shao</span>
+              </a>
+            </div>
+          </div>
+        </div>
       </div>
     </div>
   )
