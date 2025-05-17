@@ -11,7 +11,7 @@ function App() {
       {/* Main content */}
       <div className="flex-1 flex flex-col items-center justify-center">
         {/* Text column */}
-        <div className="space-y-4 text-4xl sm:text-5xl md:text-6xl text-center">
+        <div className="space-y-4 text-4xl sm:text-5xl md:text-6xl text-center text-black">
           <span className="font-serif">help</span>
           <span className="font-serif">i</span>
           <span className="font-serif">dont</span>
