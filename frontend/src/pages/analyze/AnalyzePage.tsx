@@ -6,10 +6,10 @@ function Analyze() {
   const location = useLocation();
   
   // State to store data from navigation
-  const [profile, setProfile] = useState<any>(null);
+  const [profile, setProfile] = useState(null);
   const [whereMet, setWhereMet] = useState('');
-  const [confidence, setConfidence] = useState<number | null>(null);
-  const [photoData, setPhotoData] = useState<string | null>(null);
+  const [confidence, setConfidence] = useState(null);
+  const [photoData, setPhotoData] = useState(null);
   const [loading, setLoading] = useState(true);
 
   // Handle search navigation
