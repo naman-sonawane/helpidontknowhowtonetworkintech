@@ -9,6 +9,7 @@ function Camera() {
   const [cameraActive, setCameraActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [whereMet, setWhereMet] = useState('');
+  const [photoData, setPhotoData] = useState<string | null>(null);
   
   // New states for backend interaction
   const [isProcessing, setIsProcessing] = useState(false);
@@ -57,6 +58,10 @@ function Camera() {
     if (ctx) {
       ctx.drawImage(videoRef.current, 0, 0, width, height);
       setHasPhoto(true);
+      
+      // Store the photo data as a base64 string
+      const photoDataUrl = canvasRef.current.toDataURL('image/jpeg');
+      setPhotoData(photoDataUrl);
     }
   };
 
@@ -66,11 +71,12 @@ function Camera() {
     if (ctx) {
       ctx.clearRect(0, 0, canvasRef.current.width, canvasRef.current.height);
       setHasPhoto(false);
+      setPhotoData(null);
     }
   };
 
   const processPhoto = () => {
-    if (!canvasRef.current) return;
+    if (!canvasRef.current || !photoData) return;
     
     setIsProcessing(true);
     setErrorMessage('');
@@ -109,18 +115,19 @@ function Camera() {
           // Store the matched profile
           setMatchedProfile(data.profile);
           
-          // Navigate to analyze page with profile data
+          // Navigate to analyze page with profile data AND photo data
           navigate('/analyze', { 
             state: { 
               profile: data.profile,
               whereMet: whereMet,
-              confidence: data.confidence || null
+              confidence: data.confidence || null,
+              photoData: photoData // Pass the captured photo
             } 
           });
         } else {
           // No match found, go to no-match page
           navigate('/no-match', { 
-            state: { whereMet } 
+            state: { whereMet, photoData } // Also pass the photo to no-match page
           });
         }
       })

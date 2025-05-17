@@ -5,10 +5,11 @@ function Analyze() {
   const navigate = useNavigate();
   const location = useLocation();
   
-  // State to store profile data from backend
+  // State to store data from navigation
   const [profile, setProfile] = useState<any>(null);
   const [whereMet, setWhereMet] = useState('');
   const [confidence, setConfidence] = useState<number | null>(null);
+  const [photoData, setPhotoData] = useState<string | null>(null);
   const [loading, setLoading] = useState(true);
 
   // Handle search navigation
@@ -25,10 +26,11 @@ function Analyze() {
   // Load profile data from navigation state
   useEffect(() => {
     if (location.state) {
-      const { profile, whereMet, confidence } = location.state as any;
+      const { profile, whereMet, confidence, photoData } = location.state as any;
       setProfile(profile);
       setWhereMet(whereMet || '');
       setConfidence(confidence);
+      setPhotoData(photoData || null);
       setLoading(false);
     } else {
       // If no profile data was passed, try to get from URL params or redirect
@@ -99,12 +101,18 @@ function Analyze() {
       
       {/* Profile section */}
       <div className="w-full max-w-md flex flex-col items-center gap-2 text-center">
-        {/* Profile photo */}
-        <img
-          src={profileImage}
-          alt={profileData.name}
-          className="w-16 h-16 rounded-xl object-cover border border-black"
-        />
+        <div className="flex items-center gap-4 w-full justify-center">
+          {/* Captured Photo Display */}
+          {photoData && (
+            <div className="w-16 h-16 rounded-xl overflow-hidden border border-black">
+              <img 
+                src={photoData} 
+                alt="Captured" 
+                className="w-full h-full object-cover"
+              />
+            </div>
+          )}
+        </div>
         
         {/* Name and title */}
         <div className="mt-1">
