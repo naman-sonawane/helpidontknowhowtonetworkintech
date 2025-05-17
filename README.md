@@ -23,7 +23,7 @@ The project is organized into two main directories:
 - npm or yarn package manager
 - Modern web browser
 
-## Installation
+## Installation Guide
 
 ### Backend Setup
 
