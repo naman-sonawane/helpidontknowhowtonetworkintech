@@ -135,9 +135,9 @@ function Camera() {
             {/* Analyze Button */}
             <button
               onClick={processPhoto}
-              className="mt-4 border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2"
+              className="mt-4 border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9]"
             >
-              ⚡ analyze
+              ⚡ <span className="font-medium">analyze</span>
             </button>
           </>
         )}
