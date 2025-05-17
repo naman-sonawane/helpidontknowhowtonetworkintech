@@ -3,17 +3,17 @@ import { useRef, useState, useEffect } from 'react';
 
 function Camera() {
   const navigate = useNavigate();
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
   const [hasPhoto, setHasPhoto] = useState(false);
   const [cameraActive, setCameraActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [whereMet, setWhereMet] = useState('');
-  const [photoData, setPhotoData] = useState<string | null>(null);
+  const [photoData, setPhotoData] = useState(null);
   
   // New states for backend interaction
   const [isProcessing, setIsProcessing] = useState(false);
-  const [matchedProfile, setMatchedProfile] = useState<any>(null);
+  const [matchedProfile, setMatchedProfile] = useState(null);
 
   const startCamera = async () => {
     try {
