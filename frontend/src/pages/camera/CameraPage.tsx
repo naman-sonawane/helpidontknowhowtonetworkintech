@@ -98,7 +98,7 @@ function Camera() {
       }
       
       // Send the photo to the backend for face matching
-      fetch('http://localhost:5000/api/face/match', {
+      fetch('https://helpidontknowhowtonetworkintech.onrender.com/api/face/match', {
         method: 'POST',
         body: formData,
       })
