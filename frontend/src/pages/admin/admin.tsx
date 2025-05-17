@@ -13,10 +13,13 @@ function AdminPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   
-  const videoRef = useRef<HTMLVideoElement>(null);
-  const canvasRef = useRef<HTMLCanvasElement>(null);
+  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const canvasRef = useRef<HTMLCanvasElement | null>(null);
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [hasPhoto, setHasPhoto] = useState(false);
+  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
+  const [imageSource, setImageSource] = useState<'camera' | 'upload'>('camera');
   
   // Start the camera
   const startCamera = async () => {
@@ -75,13 +78,72 @@ function AdminPage() {
       setHasPhoto(false);
     }
   };
+
+  // Handle file upload
+  const handleFileUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (e.target.files && e.target.files.length > 0) {
+      const file = e.target.files[0];
+      
+      // Check if the file is an image
+      if (!file.type.startsWith('image/')) {
+        setErrorMessage('Please upload an image file');
+        return;
+      }
+      
+      setUploadedImage(file);
+      setImageSource('upload');
+      
+      // Preview the uploaded image on canvas
+      const reader = new FileReader();
+      reader.onload = (event) => {
+        if (canvasRef.current && event.target?.result) {
+          const img = new Image();
+          img.onload = () => {
+            if (canvasRef.current) {
+              const ctx = canvasRef.current.getContext('2d');
+              
+              // Set canvas dimensions to match image
+              canvasRef.current.width = img.width;
+              canvasRef.current.height = img.height;
+              
+              // Draw the image on canvas
+              if (ctx) {
+                ctx.drawImage(img, 0, 0);
+                setHasPhoto(true);
+              }
+            }
+          };
+          img.src = event.target.result as string;
+        }
+      };
+      reader.readAsDataURL(file);
+    }
+  };
+  
+  // Switch between camera and upload
+  const switchToCamera = () => {
+    setImageSource('camera');
+    setUploadedImage(null);
+    clearPhoto();
+    startCamera();
+  };
+  
+  const switchToUpload = () => {
+    setImageSource('upload');
+    stopCamera();
+    clearPhoto();
+    // Trigger file input click
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
   
   // Submit the form
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     
-    if (!linkedinUrl || !name || !hasPhoto) {
-      setErrorMessage('Please fill all required fields and take a photo');
+    if (!linkedinUrl || !name || !(hasPhoto || uploadedImage)) {
+      setErrorMessage('Please fill all required fields and provide a photo');
       return;
     }
     
@@ -89,10 +151,17 @@ function AdminPage() {
     setErrorMessage('');
     
     try {
-      // Convert canvas to blob
-      const photoBlob = await new Promise<Blob | null>((resolve) => {
-        canvasRef.current?.toBlob(blob => resolve(blob), 'image/jpeg', 0.95);
-      });
+      let photoBlob: Blob | null = null;
+      
+      // Get image data - either from canvas or uploaded file
+      if (imageSource === 'camera' && canvasRef.current) {
+        // Convert canvas to blob
+        photoBlob = await new Promise<Blob | null>((resolve) => {
+          canvasRef.current?.toBlob(blob => resolve(blob), 'image/jpeg', 0.95);
+        });
+      } else if (imageSource === 'upload' && uploadedImage) {
+        photoBlob = uploadedImage;
+      }
       
       if (!photoBlob) {
         throw new Error('Failed to process photo');
@@ -134,6 +203,7 @@ function AdminPage() {
         setLocation('');
         setSummary('');
         clearPhoto();
+        setUploadedImage(null);
       } else {
         throw new Error(result.message || 'Failed to add profile');
       }
@@ -145,16 +215,19 @@ function AdminPage() {
     }
   };
   
-  // Clean up camera when component unmounts
+  // Initialize camera when component mounts and image source is camera
   useEffect(() => {
-    startCamera();
+    if (imageSource === 'camera') {
+      startCamera();
+    }
+    
     return () => {
       stopCamera();
     };
-  }, []);
+  }, [imageSource]);
   
   return (
-    <div className="min-h-screen bg-cream p-4">
+    <div className="min-h-screen bg-[#fdf5eb] p-4 font-serif">
       <header className="mb-6">
         <button 
           onClick={() => navigate('/')}
@@ -166,25 +239,71 @@ function AdminPage() {
       </header>
       
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
-        {/* Camera Section */}
-        <div className="bg-white p-4 rounded-lg shadow">
+        {/* Photo Section */}
+        <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
           <h2 className="text-xl mb-4">Profile Photo</h2>
           
-          <div className="relative bg-black rounded-lg overflow-hidden aspect-[3/4]">
-            <video 
-              ref={videoRef}
-              className={`absolute inset-0 w-full h-full object-cover ${hasPhoto ? 'hidden' : 'block'}`}
-              playsInline
-            ></video>
+          {/* Image Source Selector */}
+          <div className="flex justify-center mb-4 border-b pb-3">
+            <button
+              type="button"
+              onClick={switchToCamera}
+              className={`px-4 py-2 rounded-l-lg ${
+                imageSource === 'camera' 
+                  ? 'bg-black text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Camera
+            </button>
+            <button
+              type="button"
+              onClick={switchToUpload}
+              className={`px-4 py-2 rounded-r-lg ${
+                imageSource === 'upload' 
+                  ? 'bg-black text-white' 
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200'
+              }`}
+            >
+              Upload
+            </button>
             
+            {/* Hidden file input */}
+            <input
+              type="file"
+              ref={fileInputRef}
+              accept="image/*"
+              onChange={handleFileUpload}
+              className="hidden"
+            />
+          </div>
+          
+          <div className="relative bg-black rounded-lg overflow-hidden aspect-[3/4]">
+            {/* Video element (only shown for camera) */}
+            {imageSource === 'camera' && (
+              <video 
+                ref={videoRef}
+                className={`absolute inset-0 w-full h-full object-cover ${hasPhoto ? 'hidden' : 'block'}`}
+                playsInline
+              ></video>
+            )}
+            
+            {/* Canvas element (shown for both camera photos and uploads) */}
             <canvas 
               ref={canvasRef}
               className={`absolute inset-0 w-full h-full object-cover ${hasPhoto ? 'block' : 'hidden'}`}
             ></canvas>
+            
+            {/* Message when neither camera nor photo is available */}
+            {imageSource === 'upload' && !hasPhoto && !uploadedImage && (
+              <div className="absolute inset-0 flex items-center justify-center text-white text-center p-4">
+                <p>Click "Upload" to select an image file</p>
+              </div>
+            )}
           </div>
           
           <div className="mt-4 flex justify-center">
-            {!hasPhoto ? (
+            {imageSource === 'camera' && !hasPhoto && (
               <button 
                 onClick={takePhoto}
                 disabled={!cameraActive}
@@ -196,19 +315,35 @@ function AdminPage() {
               >
                 Take Photo
               </button>
-            ) : (
+            )}
+            
+            {imageSource === 'upload' && !hasPhoto && (
+              <button
+                onClick={() => fileInputRef.current?.click()}
+                className="px-6 py-2 bg-black text-white rounded-full hover:bg-gray-800"
+              >
+                Select Image
+              </button>
+            )}
+            
+            {hasPhoto && (
               <button 
-                onClick={clearPhoto}
+                onClick={() => {
+                  clearPhoto();
+                  if (imageSource === 'upload') {
+                    setUploadedImage(null);
+                  }
+                }}
                 className="px-6 py-2 bg-gray-200 text-black rounded-full hover:bg-gray-300"
               >
-                Retake Photo
+                {imageSource === 'camera' ? 'Retake Photo' : 'Choose Another Image'}
               </button>
             )}
           </div>
         </div>
         
         {/* Form Section */}
-        <div className="bg-white p-4 rounded-lg shadow">
+        <div className="bg-white p-4 rounded-lg shadow border border-gray-200">
           <h2 className="text-xl mb-4">LinkedIn Profile</h2>
           
           <form onSubmit={handleSubmit}>
@@ -271,9 +406,9 @@ function AdminPage() {
             
             <button
               type="submit"
-              disabled={isLoading || !hasPhoto}
+              disabled={isLoading || !(hasPhoto || uploadedImage)}
               className={`w-full py-2 rounded-full ${
-                isLoading || !hasPhoto
+                isLoading || !(hasPhoto || uploadedImage)
                   ? 'bg-gray-300 text-gray-500 cursor-not-allowed'
                   : 'bg-black text-white hover:bg-gray-800'
               }`}

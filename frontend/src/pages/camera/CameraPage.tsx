@@ -9,10 +9,6 @@ function Camera() {
   const [cameraActive, setCameraActive] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [whereMet, setWhereMet] = useState('');
-  
-  // New states for backend interaction
-  const [isProcessing, setIsProcessing] = useState(false);
-  const [matchedProfile, setMatchedProfile] = useState<any>(null);
 
   const startCamera = async () => {
     try {
@@ -71,65 +67,15 @@ function Camera() {
 
   const processPhoto = () => {
     if (!canvasRef.current) return;
-    
-    setIsProcessing(true);
-    setErrorMessage('');
 
     canvasRef.current.toBlob((blob) => {
-      if (!blob) {
-        setIsProcessing(false);
-        setErrorMessage('Failed to process photo');
-        return;
-      }
-      
-      // Create form data to send to backend
-      const formData = new FormData();
-      formData.append('image', blob, 'photo.jpg');
-      
-      // If whereMet is provided, include it in the request
-      if (whereMet.trim()) {
-        formData.append('contextInfo', JSON.stringify({ whereMet }));
-      }
-      
-      // Send the photo to the backend for face matching
-      fetch('http://localhost:5000/api/face/match', {
-        method: 'POST',
-        body: formData,
-      })
-      .then(response => {
-        if (!response.ok) {
-          throw new Error('Server error: ' + response.status);
-        }
-        return response.json();
-      })
-      .then(data => {
-        setIsProcessing(false);
-        
-        if (data.success && data.profile) {
-          // Store the matched profile
-          setMatchedProfile(data.profile);
-          
-          // Navigate to analyze page with profile data
-          navigate('/analyze', { 
-            state: { 
-              profile: data.profile,
-              whereMet: whereMet,
-              confidence: data.confidence || null
-            } 
-          });
-        } else {
-          // No match found, go to no-match page
-          navigate('/no-match', { 
-            state: { whereMet } 
-          });
-        }
-      })
-      .catch(error => {
-        console.error('Error connecting to backend:', error);
-        setIsProcessing(false);
-        setErrorMessage('Failed to connect to the server. Please try again.');
-      });
+      if (!blob) return;
+      console.log('Photo ready to send to backend', blob);
+      console.log('Where you met:', whereMet);
+      // You can send `blob` and `whereMet` to your backend here.
     }, 'image/jpeg', 0.8);
+
+    navigate('/analyze'); // navigate to next page
   };
 
   useEffect(() => {
@@ -150,16 +96,9 @@ function Camera() {
         <div className="w-8" />
       </div>
 
-      {/* Error Message */}
-      {errorMessage && (
-        <div className="w-full max-w-xs bg-red-100 border border-red-400 text-red-700 px-4 py-2 rounded-lg mt-2">
-          {errorMessage}
-        </div>
-      )}
-
       {/* Photo Container */}
       <div className="flex flex-col items-center justify-center flex-1 gap-6">
-        <div className="rounded-2xl border border-black overflow-hidden w-[85%] max-w-xs aspect-[3/4] bg-white relative">
+        <div className="rounded-2xl border border-black overflow-hidden w-[85%] max-w-xs aspect-[3/4] bg-white">
           <video
             ref={videoRef}
             className={`w-full h-full object-cover ${hasPhoto ? 'hidden' : 'block'}`}
@@ -170,31 +109,21 @@ function Camera() {
             ref={canvasRef}
             className={`w-full h-full object-cover ${hasPhoto ? 'block' : 'hidden'}`}
           ></canvas>
-          
-          {/* Processing Overlay */}
-          {isProcessing && (
-            <div className="absolute inset-0 bg-black bg-opacity-40 flex items-center justify-center">
-              <div className="text-white text-center">
-                <div className="animate-spin mb-2 w-8 h-8 border-4 border-t-transparent border-white rounded-full mx-auto"></div>
-                <p>Analyzing photo...</p>
-              </div>
-            </div>
-          )}
         </div>
 
         {/* Icon Button */}
         <button
           onClick={hasPhoto ? clearPhoto : takePhoto}
-          disabled={!cameraActive && !hasPhoto || isProcessing}
+          disabled={!cameraActive && !hasPhoto}
           className={`w-10 h-10 border border-black rounded-full text-xl flex items-center justify-center transition-all ${
-            (cameraActive || hasPhoto) && !isProcessing ? '' : 'opacity-30 cursor-not-allowed'
+            cameraActive || hasPhoto ? '' : 'opacity-30 cursor-not-allowed'
           }`}
         >
           {hasPhoto ? '✓' : '+'}
         </button>
 
         {/* Optional Input */}
-        {hasPhoto && !isProcessing && (
+        {hasPhoto && (
           <>
             <label className="text-sm text-gray-600 mt-2">where you met (optional)</label>
             <input
@@ -208,12 +137,7 @@ function Camera() {
             {/* Analyze Button */}
             <button
               onClick={processPhoto}
-              disabled={isProcessing}
-              className={`mt-4 border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition-transform duration-200 ease-in-out ${
-                isProcessing 
-                  ? 'opacity-50 cursor-not-allowed' 
-                  : 'hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9]'
-              }`}
+              className="mt-4 border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9]"
             >
               ⚡ <span className="font-medium">analyze</span>
             </button>
