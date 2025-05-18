@@ -235,7 +235,7 @@ function AdminPage() {
         >
           &larr; Back to Home
         </button>
-        <h1 className="text-2xl font-serif mt-2">Add LinkedIn Profile</h1>
+        <h1 className="text-2xl font-serif mt-2">Add Profile</h1>
       </header>
       
       <div className="max-w-4xl mx-auto grid grid-cols-1 md:grid-cols-2 gap-6">
