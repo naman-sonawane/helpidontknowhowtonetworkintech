@@ -45,10 +45,12 @@ async function startServer() {
     // Import routes
     const profileRoutes = require('./routes/profileRoutes');
     const faceRoutes = require('./routes/faceRoutes');
+    const compareRoutes = require('./routes/compareRoutes');
 
     // Use routes
     app.use('/api/profiles', profileRoutes);
     app.use('/api/face', faceRoutes);
+    app.use('/api/compare', compareRoutes);
 
     // Basic route for testing
     app.get('/', (req, res) => {

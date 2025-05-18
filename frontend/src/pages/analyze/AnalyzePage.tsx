@@ -16,7 +16,7 @@ function Analyze() {
   // Handle search navigation
   const handleSearchClick = () => {
     console.log("Navigating to /search...");
-    navigate('/search');
+    navigate('/search', { state: {profile} });
   };
 
   // Handle retake photo

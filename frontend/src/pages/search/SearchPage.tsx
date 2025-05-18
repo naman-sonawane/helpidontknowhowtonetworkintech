@@ -1,14 +1,76 @@
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
 import { useState } from 'react';
 import { motion } from 'framer-motion';
 
 function Search() {
   const navigate = useNavigate();
+  const location = useLocation();
   const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const [error, setError] = useState('');
 
-  const handleCompareClick = () => {
-    navigate('/results1');
-  }
+  // Get the profile data from the location state (passed from Analyze page)
+  const profileToCompare = location.state?.profile;
+
+  const handleCompareClick = async () => {
+    if (!name.trim()) {
+      setError('Please enter your name');
+      return;
+    }
+
+    if (!profileToCompare?._id) {
+      // If no profile to compare with, just navigate to results1 with default data
+      navigate('/results1', {
+        state: {
+          userName: name,
+          otherName: profileToCompare?.name || "Naman Sonawane"
+        }
+      });
+      return;
+    }
+
+    setIsLoading(true);
+    setError('');
+
+    try {
+      // Call the backend API to compare profiles
+      const response = await fetch('http://localhost:5000/api/compare/compare', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({
+          userName: name,
+          profileId: profileToCompare._id
+        })
+      });
+
+      if (!response.ok) {
+        throw new Error('Failed to generate comparison');
+      }
+
+      const data = await response.json();
+      
+      // Navigate to results with the comparison data
+      navigate('/results1', { 
+        state: { 
+          comparison: data.comparison,
+          profiles: data.profiles 
+        } 
+      });
+    } catch (error) {
+      console.error('Error:', error);
+      // On error, still navigate but with basic data
+      navigate('/results1', {
+        state: {
+          userName: name,
+          otherName: profileToCompare?.name || "Naman Sonawane"
+        }
+      });
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   return (
     <motion.div 
