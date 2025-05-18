@@ -1,10 +1,11 @@
-// routes/profileRoutes.js
 const express = require('express');
 const router = express.Router();
 const multer = require('multer');
 const upload = multer({ storage: multer.memoryStorage() });
 const Profile = require('../models/profileModel');
 const { extractFaceDescriptor } = require('../faceRec/faceRecognition');
+// Import the module function
+const { updateProfileContent } = require('../scripts/populateProfilesModule');
 
 // Get all profiles
 router.get('/', async (req, res) => {
@@ -29,9 +30,6 @@ router.post('/', upload.single('image'), async (req, res) => {
     // Extract face descriptor
     const faceDescriptor = await extractFaceDescriptor(imageBuffer);
     
-    // Generate conversation starters based on profile
-    const conversationStarters = generateConversationStarters(profileData);
-    
     // Create new profile
     const profile = new Profile({
       name: profileData.rawData?.full_name || profileData.name,
@@ -44,28 +42,32 @@ router.post('/', upload.single('image'), async (req, res) => {
         work_experience: profileData.workExperience || []
       },
       summary: profileData.summary || '',
-      conversationStarters: conversationStarters,
-      interests: profileData.interests || [],
+      conversationStarters: [], // Empty array to be populated
+      interests: [], // Empty array to be populated
       faceDescriptor: Array.from(faceDescriptor)
     });
     
     // Save profile to database
     const savedProfile = await profile.save();
+    console.log(`Profile created: ${savedProfile.name} (${savedProfile._id})`);
+    
+    // Generate conversation starters and interests for the new profile
+    console.log('Calling updateProfileContent to populate conversation starters and interests');
+    updateProfileContent(savedProfile._id)
+      .then(success => {
+        console.log(`Profile content update ${success ? 'succeeded' : 'failed'}`);
+      })
+      .catch(err => {
+        console.error('Error updating profile content:', err);
+      });
     
     // Don't return the face descriptor in the response
     const { faceDescriptor: _, ...responseProfile } = savedProfile.toObject();
     res.status(201).json(responseProfile);
   } catch (error) {
+    console.error('Error creating profile:', error);
     res.status(400).json({ message: error.message });
   }
 });
-
-// Function to generate conversation starters based on profile
-function generateConversationStarters(profile) {
-  const starters = [];
-  const rawData = profile.rawData || profile;
-    
-  return starters;
-}
 
 module.exports = router;
