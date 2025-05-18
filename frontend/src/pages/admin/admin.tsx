@@ -187,7 +187,7 @@ function AdminPage() {
       formData.append('image', photoBlob, 'profile.jpg');
       
       // Send to API https://helpidontknowhowtonetworkintech.onrender.com/api/profiles | http://localhost:5000/api/profiles
-      const response = await fetch('https://helpidontknowhowtonetworkintech.onrender.com/api/profiles', {
+      const response = await fetch('http://localhost:5000/api/profiles', {
         method: 'POST',
         body: formData
       });

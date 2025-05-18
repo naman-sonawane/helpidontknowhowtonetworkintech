@@ -147,7 +147,7 @@ function Analyze() {
         {/* Socials */}
         <div className="flex gap-3 text-lg mt-1">
           <a href={profileData.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
-            <img src="/linkedinlogo.png" alt="LinkedIn" className="w-5 h-5" />
+            <img src="public/linkedinlogo.png" alt="LinkedIn" className="w-5 h-5" />
           </a>
           {profileData.githubUrl && <a href={profileData.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">🧠</a>}
           {profileData.portfolioUrl && <a href={profileData.portfolioUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">📷</a>}
@@ -161,9 +161,10 @@ function Analyze() {
         )}
 
         {/* Divider */}
-      <div className="w-32 my-3">
-        <img src="/squiggle.png" alt="Decorative divider" className="w-full h-auto" />
-      </div>
+        <div className="w-32 my-3">
+          <img src="/squiggle.png" alt="Decorative divider" className="w-full h-auto" />
+        </div>
+
         {/* Prompt */}
         <div className="italic text-sm text-gray-700 mb-1">
           introduce yourself, then use one of these ice breakers
@@ -227,7 +228,7 @@ function Analyze() {
           className="mt-4 border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9]"
           onClick={handleSearchClick}
         >
-          ⭕ compare interests
+          <img src="/compareicon.png" alt="Compare" className="w-auto h-5 mr-1" /> compare interests
         </button>
 
         {/* New Search Button */}
