@@ -98,7 +98,7 @@ function Search() {
         <motion.input
           id="name"
           type="text"
-          placeholder="Naman Sonawane"
+          placeholder="Kanye East"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="bg-transparent border-b border-black text-lg px-1 py-0.5 focus:outline-none"
@@ -119,8 +119,9 @@ function Search() {
         whileTap={{ y: 0, boxShadow: "0 0px 0px rgba(0, 0, 0, 0.1)" }}
       >
         <img src="/compareicon.png" alt="Compare" className="w-auto h-5 mr-1" /> compare interests
+        <span           className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-yellow-400 rounded-full"></span>
         <motion.span 
-          className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-yellow-400 rounded-full border border-white"
+          className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-yellow-400 animate-ping rounded-full"
           initial={{ scale: 0 }}
           animate={{ scale: 1 }}
           transition={{ 

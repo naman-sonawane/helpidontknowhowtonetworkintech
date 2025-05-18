@@ -6,8 +6,8 @@ import { motion } from 'framer-motion';
 function Results1() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [comparison, setComparison] = useState<any>(null);
-  const [profiles, setProfiles] = useState<any>(null);
+  const [comparison, setComparison] = useState(null);
+  const [profiles, setProfiles] = useState(null);
 
   const itemVariants = {
     hidden: { opacity: 0, y: 10 },
