@@ -55,7 +55,7 @@ function Results1() {
         <div className="mt-2 space-y-4 text-[15px] leading-relaxed text-center max-w-md">
           {comparison.sharedInterests.map((item: any, index: number) => (
             <p key={index}>
-              You both {item.description.toLowerCase().startsWith('both') ? 
+              {item.description.toLowerCase().startsWith('both') ? 
                 item.description.slice(5) : item.description}
             </p>
           ))}
