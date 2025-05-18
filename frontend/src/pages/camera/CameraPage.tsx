@@ -175,7 +175,7 @@ function Camera() {
           animate={{ opacity: 1 }}
           transition={{ duration: 0.5, delay: 0.2 }}
         >
-          Find LinkedIn Profile
+          Search Profile
         </motion.h1>
         <div className="w-8" />
       </motion.div>
