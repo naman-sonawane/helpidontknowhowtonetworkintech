@@ -34,7 +34,7 @@ function Search() {
 
     try {
       // Call the backend API to compare profiles
-      const response = await fetch('http://localhost:5000/api/compare/compare', {
+      const response = await fetch('https://helpidontknowhowtonetworkintech.onrender.com/api/compare/compare', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json'
