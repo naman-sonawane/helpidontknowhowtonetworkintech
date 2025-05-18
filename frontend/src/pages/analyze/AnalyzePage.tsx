@@ -220,7 +220,7 @@ function Analyze() {
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.9 }}
           >
-            <img src="public/linkedinlogo.png" alt="LinkedIn" className="w-5 h-5" />
+            <img src="/linkedinlogo.png" alt="LinkedIn" className="w-5 h-5" />
           </motion.a>
           {profileData.githubUrl && (
             <motion.a 
