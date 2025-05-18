@@ -1,5 +1,6 @@
 import { useNavigate } from 'react-router-dom';
 import { useState } from 'react';
+import { motion } from 'framer-motion';
 
 function Search() {
   const navigate = useNavigate();
@@ -10,31 +11,65 @@ function Search() {
   }
 
   return (
-    <div className="h-screen w-full bg-[#fdf5eb] font-serif flex flex-col items-center justify-center px-6 text-black">
+    <motion.div 
+      className="h-screen w-full bg-[#fdf5eb] font-serif flex flex-col items-center justify-center px-6 text-black"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       {/* Name Input */}
-      <div className="flex flex-col w-full max-w-sm mb-10">
-        <label htmlFor="name" className="mb-1 text-base">
+      <motion.div 
+        className="flex flex-col w-full max-w-sm mb-10"
+        initial={{ opacity: 0, y: -20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.6, delay: 0.2 }}
+      >
+        <motion.label 
+          htmlFor="name" 
+          className="mb-1 text-base"
+          initial={{ opacity: 0, x: -10 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.4, delay: 0.3 }}
+        >
           your name
-        </label>
-        <input
+        </motion.label>
+        <motion.input
           id="name"
           type="text"
           placeholder="Naman Sonawane"
           value={name}
           onChange={(e) => setName(e.target.value)}
           className="bg-transparent border-b border-black text-lg px-1 py-0.5 focus:outline-none"
+          initial={{ opacity: 0, y: 10 }}
+          animate={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.4, delay: 0.4 }}
         />
-      </div>
+      </motion.div>
 
       {/* Compare Button */}
-      <button
-        className="border border-black rounded-xl px-6 py-2 flex items-center justify-center gap-2 text-lg transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9] relative"
+      <motion.button
+        className="border border-black rounded-xl px-6 py-2 flex items-center justify-center gap-2 text-lg transition-transform duration-200 ease-in-out hover:bg-[#f9f3e9] relative"
         onClick={handleCompareClick}
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ duration: 0.5, delay: 0.5 }}
+        whileHover={{ y: -3, boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
+        whileTap={{ y: 0, boxShadow: "0 0px 0px rgba(0, 0, 0, 0.1)" }}
       >
         <img src="/compareicon.png" alt="Compare" className="w-auto h-5 mr-1" /> compare interests
-        <span className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-yellow-400 rounded-full border border-white"></span>
-      </button>
-    </div>
+        <motion.span 
+          className="absolute -top-1.5 -right-1.5 w-4 h-4 bg-yellow-400 rounded-full border border-white"
+          initial={{ scale: 0 }}
+          animate={{ scale: 1 }}
+          transition={{ 
+            duration: 0.3, 
+            delay: 0.8,
+            type: "spring",
+            stiffness: 500
+          }}
+        ></motion.span>
+      </motion.button>
+    </motion.div>
   );
 }
 

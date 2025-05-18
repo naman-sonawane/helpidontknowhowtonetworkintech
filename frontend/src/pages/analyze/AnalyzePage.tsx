@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 function Analyze() {
   const navigate = useNavigate();
@@ -26,7 +27,7 @@ function Analyze() {
   // Load profile data from navigation state
   useEffect(() => {
     if (location.state) {
-      const { profile, whereMet, confidence, photoData } = location.state as any;
+      const { profile, whereMet, confidence, photoData } = location.state;
       setProfile(profile);
       setWhereMet(whereMet || '');
       setConfidence(confidence);
@@ -44,8 +45,19 @@ function Analyze() {
   if (loading) {
     return (
       <div className="min-h-screen w-full bg-[#fdf5eb] font-serif flex flex-col items-center justify-center">
-        <div className="animate-spin w-10 h-10 border-4 border-t-transparent border-black rounded-full"></div>
-        <p className="mt-4">Loading profile information...</p>
+        <motion.div 
+          animate={{ rotate: 360 }}
+          transition={{ duration: 1, repeat: Infinity, ease: "linear" }}
+          className="w-10 h-10 border-4 border-t-transparent border-black rounded-full"
+        ></motion.div>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          transition={{ duration: 0.5 }}
+          className="mt-4"
+        >
+          Loading profile information...
+        </motion.p>
       </div>
     );
   }
@@ -79,7 +91,7 @@ function Analyze() {
   ];
 
   // Icons mapping for interests
-  const interestIcons: {[key: string]: string} = {
+  const interestIcons = {
     "Coding": "💻",
     "AI/ML": "🤖",
     "Swimming": "🏊‍♂️",
@@ -97,152 +109,275 @@ function Analyze() {
     "Design": "🎨"
   };
 
+  // Animation variants
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: { 
+      opacity: 1,
+      transition: { 
+        when: "beforeChildren",
+        staggerChildren: 0.1
+      }
+    }
+  };
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 }
+  };
+
   return (
-    <div className="min-h-screen w-full bg-[#fdf5eb] font-serif flex flex-col items-center justify-between px-4 py-6 overflow-hidden text-black">
+    <motion.div 
+      className="min-h-screen w-full bg-[#fdf5eb] font-serif flex flex-col items-center justify-between px-4 py-6 overflow-hidden text-black"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.5 }}
+    >
       {/* Header with Back Button */}
-      <div className="w-full flex justify-between items-center mb-4">
-        <button onClick={handleRetakePhoto} className="text-black">
+      <motion.div 
+        className="w-full flex justify-between items-center mb-4"
+        initial={{ y: -20, opacity: 0 }}
+        animate={{ y: 0, opacity: 1 }}
+        transition={{ duration: 0.4 }}
+      >
+        <motion.button 
+          onClick={handleRetakePhoto} 
+          className="text-black"
+          whileHover={{ x: -3 }}
+          whileTap={{ scale: 0.95 }}
+        >
           ← Back
-        </button>
+        </motion.button>
         <div className="w-8"></div>
-      </div>
+      </motion.div>
       
       {/* Profile section */}
-      <div className="w-full max-w-md flex flex-col items-center gap-2 text-center">
-        <div className="flex items-center gap-4 w-full justify-center">
+      <motion.div 
+        className="w-full max-w-md flex flex-col items-center gap-2 text-center"
+        variants={containerVariants}
+        initial="hidden"
+        animate="visible"
+      >
+        <motion.div 
+          className="flex items-center gap-4 w-full justify-center"
+          variants={itemVariants}
+        >
           {/* Captured Photo Display */}
           {photoData && (
-            <div className="w-16 h-16 rounded-xl overflow-hidden border border-black">
+            <motion.div 
+              className="w-16 h-16 rounded-xl overflow-hidden border border-black"
+              initial={{ scale: 0.8, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              transition={{ duration: 0.4 }}
+            >
               <img 
                 src={photoData} 
                 alt="Captured" 
                 className="w-full h-full object-cover"
               />
-            </div>
+            </motion.div>
           )}
-        </div>
+        </motion.div>
         
         {/* Name and title */}
-        <div className="mt-1">
+        <motion.div 
+          className="mt-1"
+          variants={itemVariants}
+        >
           <h2 className="text-lg font-semibold">{profileData.name}</h2>
           <p className="text-sm">{profileData.rawData?.headline || "Professional"}</p>
           {profileData.rawData?.location && (
             <p className="text-xs text-gray-600">{profileData.rawData.location}</p>
           )}
-        </div>
+        </motion.div>
 
         {/* Match Confidence */}
         {confidence !== null && (
-          <span className={`mt-1 inline-block px-3 py-1 rounded-full text-xs ${
-            confidence > 80 
-              ? 'bg-green-100 text-green-800' 
-              : confidence > 60
-                ? 'bg-green-100 text-green-800'
-                : 'bg-yellow-100 text-yellow-800'
-          }`}>
+          <motion.span 
+            className={`mt-1 inline-block px-3 py-1 rounded-full text-xs ${
+              confidence > 80 
+                ? 'bg-green-100 text-green-800' 
+                : confidence > 60
+                  ? 'bg-green-100 text-green-800'
+                  : 'bg-yellow-100 text-yellow-800'
+            }`}
+            variants={itemVariants}
+          >
             Match confidence: {confidence}%
-          </span>
+          </motion.span>
         )}
 
         {/* Socials */}
-        <div className="flex gap-3 text-lg mt-1">
-          <a href={profileData.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+        <motion.div 
+          className="flex gap-3 text-lg mt-1"
+          variants={itemVariants}
+        >
+          <motion.a 
+            href={profileData.linkedinUrl} 
+            target="_blank" 
+            rel="noopener noreferrer" 
+            className="hover:opacity-80 transition-opacity"
+            whileHover={{ scale: 1.1 }}
+            whileTap={{ scale: 0.9 }}
+          >
             <img src="public/linkedinlogo.png" alt="LinkedIn" className="w-5 h-5" />
-          </a>
-          {profileData.githubUrl && <a href={profileData.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">🧠</a>}
-          {profileData.portfolioUrl && <a href={profileData.portfolioUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">📷</a>}
-        </div>
+          </motion.a>
+          {profileData.githubUrl && (
+            <motion.a 
+              href={profileData.githubUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:opacity-80 transition-opacity"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              🧠
+            </motion.a>
+          )}
+          {profileData.portfolioUrl && (
+            <motion.a 
+              href={profileData.portfolioUrl} 
+              target="_blank" 
+              rel="noopener noreferrer" 
+              className="hover:opacity-80 transition-opacity"
+              whileHover={{ scale: 1.1 }}
+              whileTap={{ scale: 0.9 }}
+            >
+              📷
+            </motion.a>
+          )}
+        </motion.div>
 
         {/* Where You Met */}
         {whereMet && (
-          <div className="w-full mt-3 p-2 bg-white border border-black rounded-lg text-sm">
+          <motion.div 
+            className="w-full mt-3 p-2 bg-white border border-black rounded-lg text-sm"
+            variants={itemVariants}
+          >
             <span className="font-medium">Where you met:</span> {whereMet}
-          </div>
+          </motion.div>
         )}
 
         {/* Divider */}
-        <div className="w-32 my-3">
+        <motion.div 
+          className="w-32 my-3"
+          variants={itemVariants}
+        >
           <img src="/squiggle.png" alt="Decorative divider" className="w-full h-auto" />
-        </div>
+        </motion.div>
 
         {/* Prompt */}
-        <div className="italic text-sm text-gray-700 mb-1">
+        <motion.div 
+          className="italic text-sm text-gray-700 mb-1"
+          variants={itemVariants}
+        >
           introduce yourself, then use one of these ice breakers
-        </div>
+        </motion.div>
 
         {/* Featured Conversation Starter */}
         {conversationStarters.length > 0 && (
-          <div className="text-lg font-medium mb-4 p-3 bg-white border border-black rounded-lg">
+          <motion.div 
+            className="text-lg font-medium mb-4 p-3 bg-white border border-black rounded-lg"
+            variants={itemVariants}
+            whileHover={{ scale: 1.02 }}
+          >
             "{conversationStarters[0]}"
-          </div>
+          </motion.div>
         )}
 
         {/* More Conversation starters */}
         {conversationStarters.length > 1 && (
-          <div className="text-left w-full text-[15px]">
+          <motion.div 
+            className="text-left w-full text-[15px]"
+            variants={itemVariants}
+          >
             <p className="font-semibold mb-1">More Conversation Starters</p>
-            <ul className="space-y-2">
-              {conversationStarters.slice(1).map((starter: string, index: number) => (
-                <li key={index} className="p-2 bg-[#f9f3e9] rounded-lg">
-                  "{starter}"
-                </li>
-              ))}
-            </ul>
-          </div>
+            <AnimatePresence>
+              <motion.ul className="space-y-2">
+                {conversationStarters.slice(1).map((starter, index) => (
+                  <motion.li 
+                    key={index} 
+                    className="p-2 bg-[#f9f3e9] rounded-lg"
+                    initial={{ opacity: 0, x: -10 }}
+                    animate={{ opacity: 1, x: 0 }}
+                    transition={{ delay: 0.2 + (index * 0.1) }}
+                    whileHover={{ x: 3 }}
+                  >
+                    "{starter}"
+                  </motion.li>
+                ))}
+              </motion.ul>
+            </AnimatePresence>
+          </motion.div>
         )}
 
         {/* Work Experience */}
         {profileData.rawData?.work_experience && profileData.rawData.work_experience.length > 0 && (
-          <div className="text-left w-full mt-5 text-[15px]">
+          <motion.div 
+            className="text-left w-full mt-5 text-[15px]"
+            variants={itemVariants}
+          >
             <p className="font-semibold mb-1">Current Role</p>
             <p>{profileData.rawData.work_experience[0].title}</p>
             <p className="text-gray-700">{profileData.rawData.work_experience[0].company}</p>
             <p className="text-gray-500 text-xs">{profileData.rawData.work_experience[0].duration}</p>
-          </div>
+          </motion.div>
         )}
 
         {/* Interests */}
-        <div className="text-left w-full mt-5 text-[15px]">
+        <motion.div 
+          className="text-left w-full mt-5 text-[15px]"
+          variants={itemVariants}
+        >
           <p className="font-semibold mb-1">{profileData.name.split(' ')[0]}'s Interests</p>
           <ul className="space-y-1">
-            {(profileData.interests || []).map((interest: string, index: number) => (
-              <li key={index}>
+            {(profileData.interests || []).map((interest, index) => (
+              <motion.li 
+                key={index}
+                initial={{ opacity: 0, x: -10 }}
+                animate={{ opacity: 1, x: 0 }}
+                transition={{ delay: 0.5 + (index * 0.1) }}
+                whileHover={{ x: 3 }}
+              >
                 {interestIcons[interest] || '•'} {interest}
-              </li>
+              </motion.li>
             ))}
           </ul>
-        </div>
-
-        {/* LinkedIn button */}
-        <a
-          href={profileData.linkedinUrl}
-          target="_blank"
-          rel="noopener noreferrer"
-          className="mt-5 border border-black rounded-lg px-6 py-2 w-full bg-blue-600 text-white text-center hover:bg-blue-700 transition-colors"
-        >
-          View on LinkedIn
-        </a>
+        </motion.div>
 
         {/* Compare Interests Button */}
-        <button
-          className="mt-4 border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9]"
+        <motion.button
+          className="mt-4 border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition-transform duration-200 ease-in-out hover:bg-[#f9f3e9]"
           onClick={handleSearchClick}
+          variants={itemVariants}
+          whileHover={{ y: -2, boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)" }}
+          whileTap={{ y: 0, boxShadow: "0 0px 0px rgba(0, 0, 0, 0.1)" }}
         >
           <img src="/compareicon.png" alt="Compare" className="w-auto h-5 mr-1" /> compare interests
-        </button>
+        </motion.button>
 
         {/* New Search Button */}
-        <button 
+        <motion.button 
           onClick={handleRetakePhoto}
           className="mt-4 w-9 h-9 border border-black rounded-full text-xl flex items-center justify-center hover:bg-[#f9f3e9] transition-colors"
+          variants={itemVariants}
+          whileHover={{ rotate: 90, scale: 1.1 }}
+          whileTap={{ scale: 0.9 }}
         >
           +
-        </button>
-      </div>
+        </motion.button>
+      </motion.div>
 
       {/* Footer */}
-      <p className="text-sm text-gray-700 mt-8">made with 💖</p>
-    </div>
+      <motion.p 
+        className="text-sm text-gray-700 mt-8"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        transition={{ delay: 1.2, duration: 0.5 }}
+      >
+        made with 💖
+      </motion.p>
+    </motion.div>
   );
 }
 

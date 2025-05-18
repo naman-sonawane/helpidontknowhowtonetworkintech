@@ -1,5 +1,6 @@
-import React from 'react'
-import { useNavigate } from 'react-router-dom'
+import React from 'react';
+import { useNavigate } from 'react-router-dom';
+import { motion } from 'framer-motion';
 
 function Landing() {
   const navigate = useNavigate();
@@ -8,60 +9,141 @@ function Landing() {
     navigate('/camera');
   };
 
+  // Animation variants for staggered animations
+  const containerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        staggerChildren: 0.1,
+        delayChildren: 0.3
+      }
+    }
+  };
+
+  const letterVariants = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        type: "spring",
+        stiffness: 100,
+        damping: 12
+      }
+    }
+  };
+
+  const textVariants = {
+    hidden: { opacity: 0, y: -20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.8,
+        ease: "easeOut"
+      }
+    }
+  };
+
+  const buttonVariants = {
+    hidden: { scale: 0, opacity: 0 },
+    visible: {
+      scale: 1,
+      opacity: 1,
+      transition: {
+        type: "spring",
+        stiffness: 260,
+        damping: 20,
+        delay: 1.2
+      }
+    },
+    hover: {
+      scale: 1.1,
+      boxShadow: "0px 5px 10px rgba(0, 0, 0, 0.1)",
+      borderColor: "#666",
+      transition: {
+        duration: 0.3,
+        ease: "easeInOut"
+      }
+    },
+    tap: {
+      scale: 0.95
+    }
+  };
+
+  const footerVariants = {
+    hidden: { opacity: 0 },
+    visible: {
+      opacity: 1,
+      transition: {
+        delay: 1.4,
+        duration: 0.5
+      }
+    }
+  };
+
   return (
-    <div className="flex flex-col justify-between min-h-screen bg-[#fdf5eb] w-full">
+    <motion.div 
+      className="flex flex-col justify-between min-h-screen bg-[#fdf5eb] w-full"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      transition={{ duration: 0.8 }}
+    >
       <div className="flex-1 flex flex-col items-center justify-center">
         {/* Vertical text for mobile */}
-        <div className="block lg:hidden flex flex-col items-center space-y-4">
-          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-center max-w-[90%]">
-            help
-          </p>
-          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-center max-w-[90%]">
-            i
-          </p>
-          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-center max-w-[90%]">
-            dont
-          </p>
-          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-center max-w-[90%]">
-            know
-          </p>
-          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-center max-w-[90%]">
-            how
-          </p>
-          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-center max-w-[90%]">
-            to
-          </p>
-          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-center max-w-[90%]">
-            network
-          </p>
-          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-center max-w-[90%]">
-            in
-          </p>
-          <p className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-center max-w-[90%]">
-            .tech
-          </p>
-        </div>
+        <motion.div 
+          className="block lg:hidden flex flex-col items-center space-y-4"
+          variants={containerVariants}
+          initial="hidden"
+          animate="visible"
+        >
+          {["help", "i", "dont", "know", "how", "to", "network", "in", ".tech"].map((word, index) => (
+            <motion.p 
+              key={index}
+              className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-serif text-center max-w-[90%]"
+              variants={letterVariants}
+            >
+              {word}
+            </motion.p>
+          ))}
+        </motion.div>
 
         {/* Horizontal text for large screens */}
-        <div className="hidden lg:block text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif">
+        <motion.div 
+          className="hidden lg:block text-center text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-serif"
+          variants={textVariants}
+          initial="hidden"
+          animate="visible"
+        >
           help i dont know how to network in .tech
-        </div>
+        </motion.div>
+        
         {/* Plus Button + Label */}
         <div className="mt-12 flex flex-col items-center space-y-4">
-        <button 
-          className="relative w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20
-            border-2 border-black rounded-full flex items-center justify-center
-            hover:border-gray-500 transition-colors" 
-          onClick={handleCameraClick}
-        >
-          <span className="text-2xl leading-none">+</span>
-        </button>
+          <motion.button 
+            className="relative w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20
+              border-2 border-black rounded-full flex items-center justify-center
+              transition-colors" 
+            onClick={handleCameraClick}
+            variants={buttonVariants}
+            initial="hidden"
+            animate="visible"
+            whileHover="hover"
+            whileTap="tap"
+          >
+            <span className="text-2xl leading-none">+</span>
+          </motion.button>
 
-          <p className="mt-4 text-sm sm:text-base text-gray-600 font-serif italic">
+          <motion.p 
+            className="mt-4 text-sm sm:text-base text-gray-600 font-serif italic"
+            initial={{ opacity: 0, y: 10 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 1.3, duration: 0.5 }}
+          >
             press "+" to take a picture
-          </p>
+          </motion.p>
         </div>
-
       </div>
 
       {/* Footer */}
@@ -93,8 +175,8 @@ function Landing() {
           </div>
         </div>
       </div>
-    </div>
-  )
+    </motion.div>
+  );
 }
 
-export default Landing
+export default Landing;
