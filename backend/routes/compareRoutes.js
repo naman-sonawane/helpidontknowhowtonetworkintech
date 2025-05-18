@@ -7,7 +7,7 @@ const fetch = require('node-fetch');
 // Function to compare two profiles and generate insights
 async function generateComparison(profile1, profile2) {
   try {
-    let prompt = `Compare these two LinkedIn profiles and identify 5 ULTRA-SPECIFIC shared professional elements:
+    let prompt = `Compare these two LinkedIn profiles and identify 5 SPECIFIC shared professional elements:
 
 Profile 1:
 Name: ${profile1.name}
@@ -39,22 +39,25 @@ ${profile2.rawData?.work_experience && profile2.rawData.work_experience.length >
 
 DO NOT USE generic terms like "tech industry," "programming," "leadership," "teamwork," etc.
 
-ONLY identify HYPER-SPECIFIC shared elements like:
+ONLY identify SPECIFIC shared elements like:
 - "Both built AR filters for Instagram"
 - "Both used Figma for healthcare UX design"
 - "Both spoke at React Toronto 2023"
 - "Both implemented GraphQL APIs with Apollo"
 - "Both designed embedded systems for Toyota"
 
+Refer to the following example,
 Format response as JSON:
 {
   "sharedInterests": [
-    {"interest": "You both built React Native apps for non-profits", "description": "Working on donation platforms for charity organizations"},
-    {"interest": "You both implemented WebRTC video conferencing", "description": "Creating custom video meeting solutions"}
+    {"interest": "You both built React Native apps for non-profits"},
+    {"interest": "You both implemented WebRTC video conferencing"}
   ],
   "conversationTopics": [
     "How did you optimize React Native performance for older Android devices?",
-    "What WebRTC library gave you the best cross-browser compatibility?"
+    "What WebRTC library gave you the best cross-browser compatibility?",
+    "Any tools or frameworks you would recommend?",
+    "How did you decide on the tech stack for your projects like (project name here)?"
   ]
 }
 
@@ -62,8 +65,11 @@ REQUIREMENTS:
 1. Each interest MUST name SPECIFIC tools, technologies, projects or events
 2. If no SPECIFIC overlap exists, invent NONE - only return what's genuinely shared
 3. Never exceed 3 interests if nothing concrete is shared
-4. Conversation starters must reference actual shared technical experience
-5. If you can't find enough SPECIFIC matches, return fewer matches rather than generic ones`
+4. Conversation starters must reference actual shared technical experience about events related to the other person 
+5. If you can't find enough SPECIFIC matches, return fewer matches rather than generic ones
+6. All sharedInterests MUST begin with "You both"
+7. MUST return at least 3-5 shared interests and conversation topics
+`
 
     // Call the AI endpoint
     const response = await fetch('https://ai.hackclub.com/chat/completions', {
