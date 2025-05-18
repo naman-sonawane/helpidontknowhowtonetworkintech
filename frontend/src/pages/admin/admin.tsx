@@ -13,13 +13,13 @@ function AdminPage() {
   const [errorMessage, setErrorMessage] = useState('');
   const [successMessage, setSuccessMessage] = useState('');
   
-  const videoRef = useRef<HTMLVideoElement | null>(null);
-  const canvasRef = useRef<HTMLCanvasElement | null>(null);
-  const fileInputRef = useRef<HTMLInputElement | null>(null);
+  const videoRef = useRef(null);
+  const canvasRef = useRef(null);
+  const fileInputRef = useRef(null);
   const [cameraActive, setCameraActive] = useState(false);
   const [hasPhoto, setHasPhoto] = useState(false);
-  const [uploadedImage, setUploadedImage] = useState<File | null>(null);
-  const [imageSource, setImageSource] = useState<'camera' | 'upload'>('camera');
+  const [uploadedImage, setUploadedImage] = useState(null);
+  const [imageSource, setImageSource] = useState('camera');
   
   // Start the camera
   const startCamera = async () => {
@@ -84,7 +84,7 @@ function AdminPage() {
     if (e.target.files && e.target.files.length > 0) {
       const file = e.target.files[0];
       
-      // Check if the file is an image
+      // Check if the file is an image  
       if (!file.type.startsWith('image/')) {
         setErrorMessage('Please upload an image file');
         return;

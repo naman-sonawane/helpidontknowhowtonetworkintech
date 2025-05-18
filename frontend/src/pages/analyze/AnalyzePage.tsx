@@ -104,7 +104,6 @@ function Analyze() {
         <button onClick={handleRetakePhoto} className="text-black">
           ← Back
         </button>
-        <h1 className="text-xl">LinkedIn Profile</h1>
         <div className="w-8"></div>
       </div>
       
@@ -138,8 +137,8 @@ function Analyze() {
             confidence > 80 
               ? 'bg-green-100 text-green-800' 
               : confidence > 60
-                ? 'bg-yellow-100 text-yellow-800'
-                : 'bg-orange-100 text-orange-800'
+                ? 'bg-green-100 text-green-800'
+                : 'bg-yellow-100 text-yellow-800'
           }`}>
             Match confidence: {confidence}%
           </span>
@@ -147,7 +146,9 @@ function Analyze() {
 
         {/* Socials */}
         <div className="flex gap-3 text-lg mt-1">
-          <a href={profileData.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">💼</a>
+          <a href={profileData.linkedinUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">
+            <img src="/linkedinlogo.png" alt="LinkedIn" className="w-5 h-5" />
+          </a>
           {profileData.githubUrl && <a href={profileData.githubUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">🧠</a>}
           {profileData.portfolioUrl && <a href={profileData.portfolioUrl} target="_blank" rel="noopener noreferrer" className="hover:opacity-80 transition-opacity">📷</a>}
         </div>
@@ -160,8 +161,9 @@ function Analyze() {
         )}
 
         {/* Divider */}
-        <div className="w-32 my-3 text-xl">~ ~ ~ ~ ~ ~ ~</div>
-
+      <div className="w-32 my-3">
+        <img src="/squiggle.png" alt="Decorative divider" className="w-full h-auto" />
+      </div>
         {/* Prompt */}
         <div className="italic text-sm text-gray-700 mb-1">
           introduce yourself, then use one of these ice breakers
