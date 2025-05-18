@@ -1,51 +1,86 @@
-import { useNavigate } from 'react-router-dom';
+// Results2.tsx
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 function Results2() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [comparison, setComparison] = useState<any>(null);
+  const [profiles, setProfiles] = useState<any>(null);
 
-  const GoToPrev = () => {
-    navigate('/results1');
+  useEffect(() => {
+    // Get comparison data from location state
+    if (location.state?.comparison) {
+      setComparison(location.state.comparison);
+    }
+    
+    if (location.state?.profiles) {
+      setProfiles(location.state.profiles);
+    } else {
+      // Redirect back if no data
+      navigate('/search');
+    }
+  }, [location, navigate]);
+
+  const goBack = () => {
+    navigate('/results1', { 
+      state: { 
+        comparison: comparison,
+        profiles: profiles 
+      } 
+    });
   };
 
+  const goHome = () => {
+    navigate('/');
+  };
+
+  // Loading state
+  if (!comparison || !profiles) {
+    return (
+      <div className="h-screen bg-[#fdf5eb] font-serif flex flex-col items-center justify-center">
+        <div className="animate-spin w-10 h-10 border-4 border-t-transparent border-black rounded-full"></div>
+        <p className="mt-4">Loading conversation topics...</p>
+      </div>
+    );
+  }
+
   return (
-    <div className="h-screen bg-[#fdf5eb] font-serif flex flex-col justify-between px-6 py-6 text-black">
-      {/* Centered Body */}
-      <div className="flex-1 flex flex-col justify-center items-center gap-6">
-        {/* Logo */}
-        <img src="/venn.svg" alt="Venn" className="w-24 h-24" />
-
-        {/* Name + squiggle */}
-        <div className="text-center">
-          <h1 className="text-xl font-medium">Christopher + Naman</h1>
-          <p className="text-2xl mt-1">~ ~ ~ ~ ~ ~ ~</p>
+    <div className="h-screen bg-[#fdf5eb] font-serif flex flex-col items-center justify-between px-6 py-6 text-black">
+      {/* Header */}
+      <div className="w-full flex justify-between items-center">
+        <button onClick={goBack} className="text-black">
+          ← Back
+        </button>
+        <h1 className="text-xl">Conversation Topics</h1>
+        <div className="w-8"></div>
+      </div>
+      
+      {/* Main Centered Content */}
+      <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md">
+        <div className="text-center mb-6">
+          <h2 className="text-lg font-medium">{profiles.user.name} + {profiles.other.name}</h2>
+          <p className="text-sm text-gray-600 mt-1">Try these conversation starters</p>
         </div>
 
-        {/* Questions */}
-        <div className="text-center text-[15px] space-y-4 max-w-md">
-          <p className="italic text-sm text-gray-600">you can ask him...</p>
-          <p>“How did you decide on the tech stack for your projects like Kinesis?”</p>
-          <p>“Any tools or frameworks you’d recommend?”</p>
-          <p>
-            "How did you land your full-time role at Scripty, and what excites you most about working there?"
-          </p>
+        <div className="w-full space-y-3">
+          {comparison.conversationTopics.map((topic: string, index: number) => (
+            <div key={index} className="p-3 border border-black rounded-lg bg-white hover:bg-[#f9f3e9] transition-colors">
+              <p className="text-[15px]">{topic}</p>
+            </div>
+          ))}
         </div>
-
-        {/* Buttons */}
-        <div className="flex gap-2 mt-4">
-          <button
-            onClick={GoToPrev}
-            className="border border-black rounded-full w-9 h-9 flex items-center justify-center text-lg"
-          >
-            ←
-          </button>
-          <button className="border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2 transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9]">
-            👤 profile
-          </button>
-        </div>
+        
+        <button
+          onClick={goHome}
+          className="mt-8 border border-black rounded-lg px-6 py-2 flex items-center justify-center gap-2 text-lg transition-transform duration-200 ease-in-out hover:scale-105 hover:shadow-md hover:bg-[#f9f3e9]"
+        >
+          Finish
+        </button>
       </div>
 
       {/* Footer */}
-      <p className="text-sm text-gray-700 text-center">made with 💖</p>
+      <p className="text-sm text-gray-700">made with 💖</p>
     </div>
   );
 }

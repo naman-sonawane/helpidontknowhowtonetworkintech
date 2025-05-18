@@ -1,11 +1,45 @@
-import { useNavigate } from 'react-router-dom';
+// Results1.tsx
+import { useNavigate, useLocation } from 'react-router-dom';
+import { useEffect, useState } from 'react';
 
 function Results1() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const [comparison, setComparison] = useState<any>(null);
+  const [profiles, setProfiles] = useState<any>(null);
+
+  useEffect(() => {
+    // Get comparison data from location state
+    if (location.state?.comparison) {
+      setComparison(location.state.comparison);
+    }
+    
+    if (location.state?.profiles) {
+      setProfiles(location.state.profiles);
+    } else {
+      // Redirect back if no data
+      navigate('/search');
+    }
+  }, [location, navigate]);
 
   const goToNext = () => {
-    navigate('/results2');
+    navigate('/results2', { 
+      state: { 
+        comparison: comparison,
+        profiles: profiles 
+      } 
+    });
   };
+
+  // Loading state
+  if (!comparison || !profiles) {
+    return (
+      <div className="h-screen bg-[#fdf5eb] font-serif flex flex-col items-center justify-center">
+        <div className="animate-spin w-10 h-10 border-4 border-t-transparent border-black rounded-full"></div>
+        <p className="mt-4">Loading comparison...</p>
+      </div>
+    );
+  }
 
   return (
     <div className="h-screen bg-[#fdf5eb] font-serif flex flex-col items-center justify-between px-6 py-6 text-black">
@@ -14,16 +48,17 @@ function Results1() {
         <img src="/venn.svg" alt="Venn Diagram" className="w-24 h-24" />
 
         <div className="text-center">
-          <h1 className="text-xl font-medium">Christopher + Naman</h1>
+          <h1 className="text-xl font-medium">{profiles.user.name} + {profiles.other.name}</h1>
           <p className="text-2xl mt-1">~ ~ ~ ~ ~ ~ ~</p>
         </div>
 
         <div className="mt-2 space-y-4 text-[15px] leading-relaxed text-center max-w-md">
-          <p>You both are involved in multiple <strong>hackathons</strong> and tech competitions.</p>
-          <p>You both focus on Full Stack Development, <strong>Python</strong>, and <strong>AI</strong>.</p>
-          <p>You both have leadership roles in organizing and <strong>managing events</strong>.</p>
-          <p>You both have worked on <strong>web and UI/UX</strong> design.</p>
-          <p>You both are passionate about teaching and <strong>community engagement</strong> in tech.</p>
+          {comparison.sharedInterests.map((item: any, index: number) => (
+            <p key={index}>
+              You both {item.description.toLowerCase().startsWith('both') ? 
+                item.description.slice(5) : item.description}
+            </p>
+          ))}
         </div>
 
         <button
@@ -37,7 +72,6 @@ function Results1() {
       {/* Footer */}
       <p className="text-sm text-gray-700">made with 💖</p>
     </div>
-
   );
 }
 
