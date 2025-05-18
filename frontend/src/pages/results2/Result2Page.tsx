@@ -5,8 +5,8 @@ import { useEffect, useState } from 'react';
 function Results2() {
   const navigate = useNavigate();
   const location = useLocation();
-  const [comparison, setComparison] = useState<any>(null);
-  const [profiles, setProfiles] = useState<any>(null);
+  const [comparison, setComparison] = useState(null);
+  const [profiles, setProfiles] = useState(null);
 
   useEffect(() => {
     // Get comparison data from location state
@@ -58,7 +58,8 @@ function Results2() {
       
       {/* Main Centered Content */}
       <div className="flex-1 flex flex-col items-center justify-center w-full max-w-md">
-        <div className="text-center mb-6">
+        <div className="text-center mb-6 flex flex-col items-center justify-center">
+          <img src="/venn.svg" alt="Venn Diagram" className="w-24 h-24" />
           <h2 className="text-lg font-medium">{profiles.user.name} + {profiles.other.name}</h2>
           <p className="text-sm text-gray-600 mt-1">Try these conversation starters</p>
         </div>
