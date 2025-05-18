@@ -64,30 +64,7 @@ router.post('/', upload.single('image'), async (req, res) => {
 function generateConversationStarters(profile) {
   const starters = [];
   const rawData = profile.rawData || profile;
-  
-  if (rawData.headline) {
-    starters.push(`I see you're ${rawData.headline}. What kind of projects are you working on?`);
-  }
-  
-  if (rawData.work_experience && rawData.work_experience.length > 0) {
-    const latestJob = rawData.work_experience[0];
-    starters.push(`How do you like working at ${latestJob.company} as a ${latestJob.title}?`);
-  }
-  
-  if (rawData.education && rawData.education.length > 0) {
-    const latestEdu = rawData.education[0];
-    starters.push(`I notice you studied ${latestEdu.degree} at ${latestEdu.school}. What was that experience like?`);
-  }
-  
-  if (rawData.location) {
-    starters.push(`How do you like living in ${rawData.location.split(',')[0]}?`);
-  }
-  
-  // Generic networking starters
-  starters.push("What brought you to this event today?");
-  starters.push("Are you working on anything exciting right now?");
-  starters.push("Have you attended any interesting tech events lately?");
-  
+    
   return starters;
 }
 
