@@ -1,16 +1,7 @@
-// populateProfiles.js
+// scripts/populateProfilesModule.js
 const mongoose = require('mongoose');
 const fetch = require('node-fetch');
-const Profile = require('../models/profileModel'); // Adjust path as needed
-require('dotenv').config();
-
-// Connect to MongoDB
-mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/helpidontknowhowtonetworkintech')
-  .then(() => console.log('Connected to MongoDB'))
-  .catch(err => {
-    console.error('Could not connect to MongoDB', err);
-    process.exit(1);
-  });
+const Profile = require('../models/profileModel');
 
 // Function to generate conversation starters and interests using AI
 async function generateProfileContent(profile) {
@@ -99,7 +90,37 @@ Format your response in JSON like this:
   }
 }
 
-// Main function to process all profiles
+// Update a specific profile
+async function updateProfileContent(profileId) {
+  try {
+    // Find the profile by ID
+    const profile = await Profile.findById(profileId);
+    
+    if (!profile) {
+      console.error(`Profile with ID ${profileId} not found`);
+      return false;
+    }
+    
+    console.log(`Generating content for ${profile.name}...`);
+    
+    // Generate conversation starters and interests
+    const { conversationStarters, interests } = await generateProfileContent(profile);
+    
+    // Update the profile
+    await Profile.findByIdAndUpdate(profileId, {
+      conversationStarters: conversationStarters,
+      interests: interests
+    });
+    
+    console.log(`Updated ${profile.name} with new conversation starters and interests`);
+    return true;
+  } catch (error) {
+    console.error(`Error updating profile ${profileId}:`, error);
+    return false;
+  }
+}
+
+// Process all profiles
 async function populateAllProfiles() {
   try {
     // Get all profiles
@@ -108,7 +129,7 @@ async function populateAllProfiles() {
     
     // Process each profile
     for (const profile of profiles) {
-      // Check if profile needs updating - only if either array is empty
+      // Check if profile needs updating
       const needsConversationStarters = !profile.conversationStarters || profile.conversationStarters.length === 0;
       const needsInterests = !profile.interests || profile.interests.length === 0;
       
@@ -122,16 +143,14 @@ async function populateAllProfiles() {
         const updateData = {};
         if (needsConversationStarters) {
           updateData.conversationStarters = conversationStarters;
-          console.log(`  - Adding conversation starters`);
         }
         if (needsInterests) {
           updateData.interests = interests;
-          console.log(`  - Adding interests`);
         }
         
         // Update the profile
         await Profile.findByIdAndUpdate(profile._id, updateData);
-        console.log(`Updated ${profile.name} with missing data`);
+        console.log(`Updated ${profile.name} with ${needsConversationStarters ? 'conversation starters' : ''} ${needsInterests ? 'interests' : ''}`);
         
         // Add a small delay to avoid hammering the AI service
         await new Promise(resolve => setTimeout(resolve, 1000));
@@ -141,13 +160,33 @@ async function populateAllProfiles() {
     }
     
     console.log('All profiles processed successfully');
-    process.exit(0);
+    return true;
   } catch (error) {
     console.error('Error processing profiles:', error);
-    process.exit(1);
+    return false;
   }
 }
 
-// Run the script
-console.log('Starting profile population - will only update profiles with missing conversation starters or interests');
-populateAllProfiles();
+// Export the functions
+module.exports = {
+  generateProfileContent,
+  updateProfileContent,
+  populateAllProfiles
+};
+
+// Run the script directly if called from command line
+if (require.main === module) {
+  // Connect to MongoDB when run as script
+  mongoose.connect(process.env.MONGODB_URI || 'mongodb://localhost:27017/helpidontknowhowtonetworkintech')
+    .then(() => {
+      console.log('Connected to MongoDB');
+      return populateAllProfiles();
+    })
+    .then(() => {
+      process.exit(0);
+    })
+    .catch(err => {
+      console.error('Error:', err);
+      process.exit(1);
+    });
+}
