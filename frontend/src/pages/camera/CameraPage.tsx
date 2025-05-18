@@ -99,7 +99,7 @@ function Camera() {
       }
       
       // Send the photo to the backend for face matching
-      fetch('https://helpidontknowhowtonetworkintech.onrender.com/api/face/match', {
+      fetch('http://localhost:5000/api/face/match', {
         method: 'POST',
         body: formData,
       })
@@ -135,7 +135,7 @@ function Camera() {
       .catch(error => {
         console.error('Error connecting to backend:', error);
         setIsProcessing(false);
-        setErrorMessage('Failed to connect to the server. Please try again.');
+        setErrorMessage('Face not found. Please try again.');
       });
     }, 'image/jpeg', 0.8);
   };

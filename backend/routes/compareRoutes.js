@@ -7,58 +7,63 @@ const fetch = require('node-fetch');
 // Function to compare two profiles and generate insights
 async function generateComparison(profile1, profile2) {
   try {
-    let prompt = `Compare these two LinkedIn profiles and generate:
-1) 4-5 common interests or professional areas they share (for a Venn diagram)
-2) 5-6 conversation starters that would be good for them to use when talking to each other, focusing on their shared interests and experiences
+    let prompt = `Compare these two LinkedIn profiles and identify 5 ULTRA-SPECIFIC shared professional elements:
 
 Profile 1:
 Name: ${profile1.name}
 ${profile1.rawData?.headline ? `Headline: ${profile1.rawData.headline}` : ''}
-${profile1.rawData?.location ? `Location: ${profile1.rawData.location}` : ''}
 ${profile1.summary ? `Summary: ${profile1.summary}` : ''}
 Interests: ${profile1.interests ? profile1.interests.join(', ') : ''}
 ${profile1.rawData?.education && profile1.rawData.education.length > 0 ? 
   `Education: ${profile1.rawData.education.map(edu => 
-    `${edu.school} - ${edu.degree || ''} ${edu.years ? `(${edu.years})` : ''}`
+    `${edu.school} - ${edu.degree || ''}`
   ).join(', ')}` : ''}
 ${profile1.rawData?.work_experience && profile1.rawData.work_experience.length > 0 ? 
   `Work Experience: ${profile1.rawData.work_experience.map(work => 
-    `${work.title} at ${work.company} ${work.duration ? `(${work.duration})` : ''}`
+    `${work.title} at ${work.company}`
   ).join(', ')}` : ''}
 
 Profile 2:
 Name: ${profile2.name}
 ${profile2.rawData?.headline ? `Headline: ${profile2.rawData.headline}` : ''}
-${profile2.rawData?.location ? `Location: ${profile2.rawData.location}` : ''}
 ${profile2.summary ? `Summary: ${profile2.summary}` : ''}
 Interests: ${profile2.interests ? profile2.interests.join(', ') : ''}
 ${profile2.rawData?.education && profile2.rawData.education.length > 0 ? 
   `Education: ${profile2.rawData.education.map(edu => 
-    `${edu.school} - ${edu.degree || ''} ${edu.years ? `(${edu.years})` : ''}`
+    `${edu.school} - ${edu.degree || ''}`
   ).join(', ')}` : ''}
 ${profile2.rawData?.work_experience && profile2.rawData.work_experience.length > 0 ? 
   `Work Experience: ${profile2.rawData.work_experience.map(work => 
-    `${work.title} at ${work.company} ${work.duration ? `(${work.duration})` : ''}`
+    `${work.title} at ${work.company}`
   ).join(', ')}` : ''}
 
-Format your response in JSON like this:
+DO NOT USE generic terms like "tech industry," "programming," "leadership," "teamwork," etc.
+
+ONLY identify HYPER-SPECIFIC shared elements like:
+- "Both built AR filters for Instagram"
+- "Both used Figma for healthcare UX design"
+- "Both spoke at React Toronto 2023"
+- "Both implemented GraphQL APIs with Apollo"
+- "Both designed embedded systems for Toyota"
+
+Format response as JSON:
 {
   "sharedInterests": [
-    {"interest": "interest1", "description": "Brief explanation of how they both share this interest"},
-    {"interest": "interest2", "description": "Brief explanation of how they both share this interest"},
-    {"interest": "interest3", "description": "Brief explanation of how they both share this interest"},
-    {"interest": "interest4", "description": "Brief explanation of how they both share this interest"},
-    {"interest": "interest5", "description": "Brief explanation of how they both share this interest"}
+    {"interest": "You both built React Native apps for non-profits", "description": "Working on donation platforms for charity organizations"},
+    {"interest": "You both implemented WebRTC video conferencing", "description": "Creating custom video meeting solutions"}
   ],
   "conversationTopics": [
-    "Detailed conversation starter 1 that references their shared interests or experiences",
-    "Detailed conversation starter 2 that references their shared interests or experiences",
-    "Detailed conversation starter 3 that references their shared interests or experiences",
-    "Detailed conversation starter 4 that references their shared interests or experiences",
-    "Detailed conversation starter 5 that references their shared interests or experiences",
-    "Detailed conversation starter 6 that references their shared interests or experiences"
+    "How did you optimize React Native performance for older Android devices?",
+    "What WebRTC library gave you the best cross-browser compatibility?"
   ]
-}`;
+}
+
+REQUIREMENTS:
+1. Each interest MUST name SPECIFIC tools, technologies, projects or events
+2. If no SPECIFIC overlap exists, invent NONE - only return what's genuinely shared
+3. Never exceed 3 interests if nothing concrete is shared
+4. Conversation starters must reference actual shared technical experience
+5. If you can't find enough SPECIFIC matches, return fewer matches rather than generic ones`
 
     // Call the AI endpoint
     const response = await fetch('https://ai.hackclub.com/chat/completions', {
@@ -96,17 +101,19 @@ Format your response in JSON like this:
     // Fallback with basic comparison if AI fails
     return {
       sharedInterests: [
-        {interest: "Technology", description: "Both individuals show interest in technology and digital tools"},
-        {interest: "Professional Development", description: "Both are focused on career growth and skill building"},
-        {interest: "Networking", description: "Both value making professional connections"}
+        {interest: "Full Stack Web Application Architecture", description: "Both design and implement complete web system stacks"},
+        {interest: "JavaScript Framework Specialization", description: "Both work extensively with modern JS frameworks"},
+        {interest: "Database Design Optimization", description: "Both experienced with optimizing database performance"},
+        {interest: "DevOps Pipeline Implementation", description: "Both set up CI/CD workflows for projects"},
+        {interest: "API Integration Experience", description: "Both connect systems using RESTful and GraphQL APIs"}
       ],
       conversationTopics: [
-        "What recent technology trends have caught your attention lately?",
-        "How did you first get started in your current field?",
-        "What's a project you're currently excited about working on?",
-        "Have you attended any interesting professional events recently?",
-        "What skills are you currently focusing on developing?",
-        "How do you stay updated with developments in your industry?"
+        "Which JavaScript framework have you found most reliable for large projects?",
+        "What's your approach to database schema design?",
+        "How do you handle API authentication in your projects?",
+        "What CI/CD tools have you found most effective?",
+        "Which recent API integration proved most challenging for you?",
+        "How do you approach testing in your development workflow?"
       ]
     };
   }
