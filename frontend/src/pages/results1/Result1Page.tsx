@@ -1,12 +1,18 @@
 // Results1.tsx
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useEffect, useState } from 'react';
+import { motion } from 'framer-motion';
 
 function Results1() {
   const navigate = useNavigate();
   const location = useLocation();
   const [comparison, setComparison] = useState<any>(null);
   const [profiles, setProfiles] = useState<any>(null);
+
+  const itemVariants = {
+    hidden: { opacity: 0, y: 10 },
+    visible: { opacity: 1, y: 0 }
+  };
 
   useEffect(() => {
     // Get comparison data from location state
@@ -49,8 +55,13 @@ function Results1() {
 
         <div className="text-center">
           <h1 className="text-xl font-medium">{profiles.user.name} + {profiles.other.name}</h1>
-          <p className="text-2xl mt-1">~ ~ ~ ~ ~ ~ ~</p>
-        </div>
+       </div>
+               <motion.div 
+          className="w-32 my-3"
+          variants={itemVariants}
+        >
+          <img src="/squiggle.png" alt="Decorative divider" className="w-full h-auto" />
+        </motion.div> 
 
         <div className="mt-2 space-y-4 text-[15px] leading-relaxed text-center max-w-md">
           {comparison.sharedInterests.map((item: any, index: number) => (
