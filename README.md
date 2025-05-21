@@ -2,6 +2,8 @@
 
 This is a full-stack web application designed to help individuals navigate networking in the tech industry. The project is built with modern web technologies and includes both frontend and backend components.
 
+👑 Best use of GenAI at JAMHacks 9
+
 ## Project Structure
 
 The project is organized into two main directories:
